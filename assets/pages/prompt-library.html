@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI提示词模板库 · 跨境电商运营</title>
+<style>
+:root {
+  --bg:#fafaf9; --surface:#fff; --border:#e8e6e1; --text:#1a1a18;
+  --text2:#6b6b63; --text3:#9a9992; --gold:#b8943e; --gold-light:#f5ecd7;
+  --radius:10px; --shadow:0 2px 16px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+
+.page-header{text-align:center;margin-bottom:36px}
+.page-header .icon{font-size:40px;margin-bottom:8px}
+.page-header h1{font-size:28px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+.page-header p{font-size:14px;color:var(--text2)}
+
+.category-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+.cat-tab{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:.2s;font-family:inherit}
+.cat-tab:hover,.cat-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+.prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:12px;box-shadow:var(--shadow);transition:.2s}
+.prompt-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.prompt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.prompt-title{font-size:15px;font-weight:700}
+.prompt-scene{font-size:11px;padding:3px 10px;border-radius:100px;background:var(--gold-light);color:var(--gold);font-weight:600}
+.prompt-desc{font-size:13px;color:var(--text2);margin-bottom:12px}
+.prompt-content{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px 16px;font-size:13px;color:var(--text);white-space:pre-wrap;font-family:'Cascadia Code','Fira Code','Consolas',monospace;line-height:1.7;max-height:200px;overflow-y:auto;position:relative}
+.prompt-content::-webkit-scrollbar{width:4px}
+.prompt-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.copy-btn{position:absolute;top:8px;right:8px;padding:4px 12px;border-radius:100px;border:1px solid var(--border);background:var(--surface);font-size:11px;color:var(--text2);cursor:pointer;transition:.2s;font-family:inherit}
+.copy-btn:hover{background:var(--text);color:#fff;border-color:var(--text)}
+.copy-btn.copied{background:#3d7d4a;color:#fff;border-color:#3d7d4a}
+
+.prompt-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.ptag{font-size:11px;padding:2px 8px;border-radius:100px;background:#f4f2ee;color:#9a9992}
+
+.page-footer{text-align:center;padding:32px;font-size:12px;color:var(--text3)}
+.page-footer a{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <div class="icon">📚</div>
+  <h1>AI提示词模板库</h1>
+  <p>跨境电商运营场景 · 可复用提示词集合 · 持续沉淀迭代</p>
+</div>
+
+<div class="category-tabs" id="catTabs">
+  <button class="cat-tab active" data-cat="all">全部</button>
+  <button class="cat-tab" data-cat="listing">📦 Listing文案</button>
+  <button class="cat-tab" data-cat="data">📊 数据分析</button>
+  <button class="cat-tab" data-cat="customer">💬 客户沟通</button>
+  <button class="cat-tab" data-cat="research">🔍 竞品调研</button>
+  <button class="cat-tab" data-cat="process">⚙️ 流程优化</button>
+</div>
+
+<div id="promptList"></div>
+
+<div class="page-footer">
+  <p>提示词模板库由 <strong>吴子嘉</strong> 整理沉淀 · AI辅助分类与优化</p>
+  <p style="margin-top:4px">模板展示的是提示词工程方法，场景为示例说明</p>
+</div>
+</div>
+
+<script>
+const prompts = [
+  // Listing文案
+  {cat:'listing',title:'跨境商品Listing生成（多平台）',scene:'日常高频',desc:'输入产品基础信息，一键生成适配Amazon/Shopee/Lazada的Listing文案',
+   template:`你是一名资深的跨境电商运营专家，擅长撰写高转化率的商品Listing文案。
+
+【产品信息】
+产品名称：{填写产品名称}
+核心卖点：{列出3-5个卖点，每条一行}
+目标客群：{描述目标用户画像}
+价格区间：{填写价格范围}
+竞品链接：{可选，填写竞品ASIN或URL}
+
+【生成要求】
+1. 标题：符合{平台名称}规范，包含核心关键词，突出差异化卖点，字符数控制在{平台字符限制}以内
+2. 五点描述(Bullet Points)：每点聚焦一个卖点，使用场景化语言，让用户能想象使用效果
+3. 搜索关键词(Search Terms)：列出15-20个相关搜索词，按相关性排序
+4. A+页面文案：提供模块化文案框架，包含品牌故事、产品亮点、使用场景、规格参数
+
+【格式要求】
+- 输出时标注每个模块的字符数
+- 如有字数超出平台限制，给出删减建议
+- 最后附上该Listing的差异化竞争优势总结`,
+   tags:['Listing','多平台','日常高频','P0']
+  },
+  {cat:'listing',title:'Listing标题A/B测试变体生成',scene:'优化迭代',desc:'基于现有标题生成多个测试变体，用于A/B测试提升点击率',
+   template:`你是一位Listing优化专家。请基于以下原始标题，生成5个优化变体。
+
+【原始标题】
+{粘贴现有标题}
+
+【产品核心关键词】
+{列出3-5个必须包含的关键词}
+
+【优化方向】
+- 变体1-2：强调性价比
+- 变体3-4：强调品质/材质
+- 变体5：制造紧迫感/社交证明
+
+【要求】
+1. 每个变体字符数不超过平台限制（Amazon: 200字符）
+2. 保留所有核心关键词
+3. 标注每个变体的侧重点和预期点击率提升预估
+4. 推荐最佳变体并说明理由`,
+   tags:['Listing','A/B测试','优化']
+  },
+  {cat:'listing',title:'差评分析 → Listing改进',scene:'质量优化',desc:'分析产品差评，反推Listing中需要优化的描述点',
+   template:`分析以下差评内容，找出Listing描述与用户实际期望之间的差距，并给出Listing优化建议。
+
+【差评内容】
+{粘贴近30天的1-3星差评，每条用---分隔}
+
+【当前Listing描述】
+{粘贴当前Listing标题+五点描述}
+
+【分析输出】
+1. 差评关键词提取：高频出现的负面词汇
+2. 期望落差分析：用户期望 vs 实际收到的差距在哪里
+3. Listing修改建议：具体到哪个Bullet Point需要如何修改
+4. 预防性描述：在Listing中增加什么说明可以减少此类差评`,
+   tags:['Listing','差评分析','质量优化']
+  },
+
+  // 数据分析
+  {cat:'data',title:'运营数据周报生成',scene:'周报输出',desc:'输入原始数据，自动生成结构化周报和分析洞察',
+   template:`你是一名跨境电商数据分析师。请基于以下数据生成一份运营周报。
+
+【原始数据】
+销售额：{填写}
+订单量：{填写}
+客单价：{填写}
+广告花费：{填写}
+广告销售额：{填写}
+退货率：{填写}
+Top 3 ASIN及销售额：{填写}
+环比变化：{与上周对比的关键数据}
+
+【报告结构】
+1. 核心指标概览（3-5个关键数字，用📊呈现）
+2. 本周亮点（1-2个正面变化）
+3. 需要关注的问题（1-2个风险点）
+4. 广告效率分析（ACOS变化趋势）
+5. 下周行动建议（2-3条可执行的建议）
+
+【要求】
+- 语言简洁，一页纸能看完
+- 数据异常处标注可能原因
+- 每条建议都要有明确的负责人和截止时间`,
+   tags:['数据','周报','PPT素材']
+  },
+  {cat:'data',title:'广告关键词效果分析',scene:'广告优化',desc:'分析广告搜索词报告，给出关键词优化策略',
+   template:`分析以下广告搜索词报告数据，给出关键词优化建议。
+
+【数据表格】
+{粘贴Search Term Report，包含：搜索词、曝光、点击、花费、销售额、ACOS}
+
+【分析维度】
+1. 高转化词（ACOS<目标值且出单>5）：建议提升竞价或设为精准匹配
+2. 花钱不转化词（花费>$X且0订单）：建议否定
+3. 长尾机会词（低曝光但高转化）：建议单独建组测试
+4. 品牌词表现：检查是否被竞品截流
+
+【输出格式】
+| 搜索词 | 当前表现 | 建议操作 | 预期影响 |
+每类至少给出3个具体关键词的操作建议`,
+   tags:['数据','广告','PPC优化']
+  },
+
+  // 客户沟通
+  {cat:'customer',title:'差评回复模板生成',scene:'客户维护',desc:'根据差评内容生成专业、得体的回复模板',
+   template:`你是一位经验丰富的跨境电商客服主管。请根据以下差评内容，生成3种风格的回复模板。
+
+【差评内容】
+{粘贴客户差评原文}
+
+【产品信息】
+产品名：{填写}
+使用场景：{填写}
+
+【回复要求】
+版本A-标准专业型：表达歉意 + 解释可能原因 + 提供解决方案
+版本B-温暖共情型：共情理解 + 主动关心 + 超出预期的补偿方案
+版本C-简洁高效型：直接提供解决方案 + 引导站内信联系
+
+【注意事项】
+- 不出现"退款"等敏感词（防Amazon判定操纵评论）
+- 引导客户通过站内信联系
+- 英文回复需语法正确、语气自然
+- 每个版本标注适用场景`,
+   tags:['客户沟通','差评回复','客服SOP']
+  },
+  {cat:'customer',title:'客户咨询FAQ批量生成',scene:'效率提升',desc:'根据产品信息和常见问题，批量生成FAQ话术库',
+   template:`基于以下产品信息，生成一份英文FAQ话术库。
+
+【产品信息】
+名称：{填写}
+品类：{填写}
+主要功能：{列出}
+常见售后问题：{列出3-5个}
+
+【FAQ结构】
+每个FAQ包含：
+Q: {客户常见问题，用自然的口语表达}
+A: {专业且友好的回答，2-4句话}
+Tags: {问题分类标签}
+
+请生成至少10条FAQ，覆盖：
+- 产品使用类（3条）
+- 物流时效类（2条）
+- 退换货政策类（2条）
+- 产品对比类（2条）
+- 促销优惠类（1条）`,
+   tags:['客户沟通','FAQ','效率工具']
+  },
+
+  // 竞品调研
+  {cat:'research',title:'竞品Listing分析报告',scene:'新品立项',desc:'分析竞品Listing结构，找出可借鉴的优化方向',
+   template:`你是一位跨境电商市场分析师。请对以下竞品Listing进行结构化分析。
+
+【竞品链接/ASIN】
+{填写3-5个竞品ASIN}
+
+【分析维度】
+1. 标题结构拆解：品牌词+核心词+属性词+场景词 的布局方式
+2. 五点描述策略：每个竞品的Bullet Points分别侧重什么（功能/情感/场景/参数/承诺）
+3. 图片策略：主图风格、附图类型（场景图/尺寸图/对比图/视频）
+4. 定价策略：价格区间、是否有Coupon、与我们的价格对比
+5. 评论分析：高频好评关键词 + 高频差评关键词
+6. A+页面/EBC：内容模块结构、视觉风格
+
+【输出要求】
+- 用表格横向对比
+- 标注我们可以借鉴的3个最佳实践
+- 标注竞品的3个可攻击弱点`,
+   tags:['竞品调研','新品','策略分析']
+  },
+  {cat:'research',title:'市场趋势与选品灵感',scene:'选品决策',desc:'基于关键词趋势和平台数据，发现选品机会',
+   template:`你是一位跨境电商选品专家。请根据以下信息分析市场机会。
+
+【目标市场】{美国/欧洲/日本/东南亚}
+【目标品类】{填写品类}
+【预算范围】$X-$X
+【参考关键词】{列出3-5个}
+
+【分析输出】
+1. 市场容量：近6个月搜索量趋势（上升/平稳/下降）
+2. 竞争格局：头部卖家集中度、新卖家进入难度
+3. 季节性：是否有明显淡旺季
+4. 差异化机会：目前市场上的空白点或可改进方向
+5. 风险提示：专利/合规/物流方面的潜在风险
+6. 推荐切入点：基于以上分析，推荐3个可选方向，附理由`,
+   tags:['竞品调研','选品','市场分析']
+  },
+
+  // 流程优化
+  {cat:'process',title:'SOP流程图生成',scene:'流程标准化',desc:'输入工作步骤，自动生成标准化SOP流程文档',
+   template:`你是一位流程优化专家。请将以下工作流程整理为标准化SOP文档。
+
+【工作内容】
+{描述日常工作内容或流程}
+
+【SOP要求】
+1. 流程概述（一句话说明这个SOP解决什么问题）
+2. 适用角色和场景
+3. 操作步骤（每一步包含：做什么 → 怎么判断做对了 → 出了问题找谁）
+4. 检查清单（Checklist，可直接打印勾选）
+5. 常见问题FAQ（列出新手最容易出错的3个点）
+
+【格式要求】
+- 步骤编号，关键操作加粗
+- 每步标注预计耗时
+- 标注前后依赖关系（哪步必须在前）`,
+   tags:['流程优化','SOP','标准化']
+  },
+  {cat:'process',title:'新人培训材料生成',scene:'团队赋能',desc:'基于岗位SOP自动生成新人培训大纲和考核题',
+   template:`你是一位培训专家。请基于以下岗位信息，生成一份新人入职培训材料。
+
+【岗位名称】{填写}
+【岗位职责】{列出3-5条}
+【常用工具】{列出工具名称}
+
+【培训材料结构】
+Part 1 - 岗位概述（1页PPT）：这个岗位做什么、为什么重要、与谁协作
+Part 2 - 工具速查表：每个工具的核心功能和常用操作
+Part 3 - 场景演练（3个案例）：给出真实场景，引导新人思考如何处理
+Part 4 - 考核题（10道选择题+2道情景题）：覆盖关键知识点
+
+【要求】
+- 语言简洁，适合碎片时间阅读
+- 每部分标注学习时长
+- 情景题要有标准答案和评分标准`,
+   tags:['流程优化','培训','团队赋能']
+  },
+];
+
+// Render
+function render(cat='all'){
+  const list=document.getElementById('promptList');
+  const items=cat==='all'?prompts:prompts.filter(p=>p.cat===cat);
+  list.innerHTML=items.map((p,i)=>`
+    <div class="prompt-card" data-cat="${p.cat}">
+      <div class="prompt-header">
+        <div class="prompt-title">${p.title}</div>
+        <span class="prompt-scene">${p.scene}</span>
+      </div>
+      <div class="prompt-desc">${p.desc}</div>
+      <div class="prompt-content" style="position:relative">
+        <button class="copy-btn" data-idx="${i}" data-cat="${p.cat}">📋 复制</button>
+        ${escapeHTML(p.template)}
+      </div>
+      <div class="prompt-tags">${p.tags.map(t=>`<span class="ptag">#${t}</span>`).join(' ')}</div>
+    </div>
+  `).join('');
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      const idx=parseInt(this.dataset.idx);
+      const cat=this.dataset.cat;
+      const items2=cat==='all'?prompts:prompts.filter(p=>p.cat===cat);
+      const item=items2[idx];
+      navigator.clipboard.writeText(item.template).then(()=>{
+        this.textContent='✅ 已复制';
+        this.classList.add('copied');
+        setTimeout(()=>{this.textContent='📋 复制';this.classList.remove('copied')},2000);
+      }).catch(()=>{
+        // Fallback
+        const ta=document.createElement('textarea');
+        ta.value=item.template;document.body.appendChild(ta);
+        ta.select();document.execCommand('copy');document.body.removeChild(ta);
+        this.textContent='✅ 已复制';this.classList.add('copied');
+        setTimeout(()=>{this.textContent='📋 复制';this.classList.remove('copied')},2000);
+      });
+    });
+  });
+}
+
+function escapeHTML(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Category tabs
+document.querySelectorAll('.cat-tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+    this.classList.add('active');
+    render(this.dataset.cat);
+  });
+});
+
+render();
+</script>
+</body>
+</html>

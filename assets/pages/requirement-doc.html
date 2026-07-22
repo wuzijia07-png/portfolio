@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求说明文档 — 跨境商品Listing AI优化工具</title>
+<style>
+:root {
+  --bg:#fafaf9; --surface:#fff; --border:#e8e6e1; --text:#1a1a18;
+  --text2:#6b6b63; --gold:#b8943e; --gold-light:#f5ecd7;
+  --green:#3d7d4a; --blue:#3d5a80; --red:#c04040;
+  --radius:10px; --shadow:0 2px 16px rgba(0,0,0,.04);
+  --tag-bg:#f4f2ee; --tag-text:#6b6b63;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:860px;margin:0 auto;padding:40px 24px}
+
+/* Header */
+.doc-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:20px;box-shadow:var(--shadow)}
+.doc-header .label{font-size:12px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.doc-header h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin-bottom:12px}
+.doc-header .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--text2)}
+.doc-header .meta span{display:flex;align-items:center;gap:6px}
+.doc-header .meta .badge{padding:3px 10px;border-radius:100px;background:var(--tag-bg);font-size:12px;color:var(--tag-text);font-weight:500}
+
+/* Sections */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:16px;box-shadow:var(--shadow)}
+.section h2{font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.section h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--text);color:#fff;font-size:13px;flex-shrink:0}
+.section .subtitle{font-size:13px;color:var(--text2);margin-bottom:16px}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.info-item{background:var(--bg);padding:12px 16px;border-radius:6px;border:1px solid var(--border)}
+.info-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.info-value{font-size:14px;font-weight:600;margin-top:2px}
+
+/* User scenario */
+.scenario-box{background:#f8faf7;border-left:3px solid var(--green);padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:12px}
+.scenario-box h4{font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px}
+.scenario-box p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Pain point */
+.pain-box{background:#fdf8f5;border-left:3px solid var(--red);padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:12px}
+.pain-box h4{font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px}
+.pain-box p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Feature table */
+.feat-table{width:100%;border-collapse:collapse;font-size:13px}
+.feat-table th{text-align:left;padding:10px 14px;background:var(--bg);font-weight:600;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid var(--border)}
+.feat-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+.feat-table tr:last-child td{border-bottom:none}
+.feat-table .priority{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600}
+.feat-table .priority.p0{background:#fde8e8;color:#c04040}
+.feat-table .priority.p1{background:#fef3e0;color:#c08030}
+.feat-table .priority.p2{background:#e8f0f8;color:#3d5a80}
+
+/* Accept criteria */
+.ac-list{list-style:none}
+.ac-list li{font-size:13px;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px}
+.ac-list li:last-child{border-bottom:none}
+.ac-list li::before{content:'☐';font-size:14px;color:var(--text2);flex-shrink:0;margin-top:1px}
+
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{padding:4px 12px;border-radius:100px;background:var(--tag-bg);font-size:12px;color:var(--tag-text);font-weight:500}
+
+/* Footer */
+.doc-footer{text-align:center;padding:20px;font-size:12px;color:var(--text2)}
+.doc-footer a{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="doc-header">
+  <div class="label">需求说明文档 · PRD</div>
+  <h1>跨境商品Listing AI优化工具</h1>
+  <div class="meta">
+    <span>📅 版本 v1.0 · 2026-07</span>
+    <span>👤 需求方：运营部</span>
+    <span>📋 对接人：吴子嘉</span>
+    <span class="badge">待评审</span>
+  </div>
+  <div class="tags">
+    <span class="tag">跨境电商</span><span class="tag">AI应用</span><span class="tag">Listing优化</span><span class="tag">运营提效</span><span class="tag">亚声威格</span>
+  </div>
+</div>
+
+<!-- 1. 需求背景 -->
+<div class="section">
+  <h2><span class="num">1</span> 需求背景</h2>
+
+  <div class="scenario-box">
+    <h4>📖 业务场景</h4>
+    <p>运营团队每周需上新50+ SKU到Amazon/Shopee等平台。目前Listing标题、五点描述、关键词、A+页面文案全靠人工撰写，单个Listing耗时约40分钟。随着SKU量增长，运营同学反馈工作量大、质量不稳定、多平台适配耗时严重。</p>
+  </div>
+
+  <div class="pain-box">
+    <h4>😣 核心痛点</h4>
+    <p>① 人工撰写效率低，新人上手慢；② 不同运营写的Listing质量参差不齐；③ 多平台（Amazon/Shopee/Lazada）格式要求不同，重复劳动；④ 缺乏历史数据参考，不知道什么样的Listing转化好</p>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-item"><div class="info-label">需求来源</div><div class="info-value">运营部 · 张经理</div></div>
+    <div class="info-item"><div class="info-label">提出时间</div><div class="info-value">2026年7月</div></div>
+    <div class="info-item"><div class="info-label">影响范围</div><div class="info-value">运营团队（约15人）</div></div>
+    <div class="info-item"><div class="info-label">期望上线</div><div class="info-value">2周内原型验证</div></div>
+  </div>
+</div>
+
+<!-- 2. 用户与场景 -->
+<div class="section">
+  <h2><span class="num">2</span> 用户角色与使用场景</h2>
+  <table class="feat-table">
+    <tr><th>角色</th><th>场景描述</th><th>核心诉求</th></tr>
+    <tr>
+      <td><strong>运营专员</strong></td>
+      <td>每天需要为新品撰写Listing文案，在后台填写后发布到各平台</td>
+      <td>输入产品信息 → 一键生成多平台适配的Listing草稿 → 人工微调即可使用</td>
+    </tr>
+    <tr>
+      <td><strong>运营主管</strong></td>
+      <td>审核下属提交的Listing质量，抽查是否符合平台规范</td>
+      <td>查看生成记录、对比历史版本、追踪修改履历</td>
+    </tr>
+    <tr>
+      <td><strong>产品经理</strong></td>
+      <td>新品立项时提供产品参数和卖点，需要对接运营</td>
+      <td>上传产品规格表 → 自动生成Listing初稿 → 同步给运营优化</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 3. 功能需求 -->
+<div class="section">
+  <h2><span class="num">3</span> 功能需求清单</h2>
+  <table class="feat-table">
+    <tr><th>序号</th><th>功能模块</th><th>功能描述</th><th>优先级</th></tr>
+    <tr>
+      <td>F-01</td>
+      <td><strong>AI Listing生成</strong></td>
+      <td>输入产品名称、规格、卖点 → AI自动生成标题、五点描述、关键词、A+文案，支持Amazon/Shopee/Lazada多平台格式切换</td>
+      <td><span class="priority p0">P0 必须</span></td>
+    </tr>
+    <tr>
+      <td>F-02</td>
+      <td><strong>产品信息导入</strong></td>
+      <td>支持手动填写 / Excel批量导入 / ERP系统对接三种方式录入产品基础信息</td>
+      <td><span class="priority p0">P0 必须</span></td>
+    </tr>
+    <tr>
+      <td>F-03</td>
+      <td><strong>文案在线编辑</strong></td>
+      <td>生成结果可在页面内直接编辑修改，支持实时字符数统计和平台规范校验</td>
+      <td><span class="priority p0">P0 必须</span></td>
+    </tr>
+    <tr>
+      <td>F-04</td>
+      <td><strong>历史记录</strong></td>
+      <td>保存每次生成记录，支持查看、复制、对比历史版本</td>
+      <td><span class="priority p1">P1 重要</span></td>
+    </tr>
+    <tr>
+      <td>F-05</td>
+      <td><strong>质量评分</strong></td>
+      <td>AI对生成的Listing进行质量打分（完整性、关键词密度、吸引力等维度）</td>
+      <td><span class="priority p1">P1 重要</span></td>
+    </tr>
+    <tr>
+      <td>F-06</td>
+      <td><strong>数据看板</strong></td>
+      <td>统计使用频次、生成数量、采纳率、各平台分布等运营数据</td>
+      <td><span class="priority p2">P2 锦上添花</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- 4. 验收标准 -->
+<div class="section">
+  <h2><span class="num">4</span> 验收标准</h2>
+  <ul class="ac-list">
+    <li>输入产品名称+3个卖点后，30秒内生成完整Listing草稿（标题+五点描述+关键词）</li>
+    <li>生成结果支持一键切换 Amazon / Shopee / Lazada 三种平台格式，各平台字符限制自动适配</li>
+    <li>支持Excel批量导入，单次最多50个产品，批量生成时间不超过5分钟</li>
+    <li>在线编辑器支持撤销/重做，关闭页面前自动草稿保存</li>
+    <li>生成内容可复制、可导出为Excel，带时间戳和版本号</li>
+    <li>原型需在2周内完成，可让运营同学实际操作并收集反馈</li>
+  </ul>
+</div>
+
+<!-- 5. 原型方案 -->
+<div class="section">
+  <h2><span class="num">5</span> 原型验证方案</h2>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:16px">使用 Claude Code + HTML/CSS/JS 搭建可交互原型，让运营同学实际操作验证需求理解是否准确。</p>
+  <div class="info-grid">
+    <div class="info-item"><div class="info-label">原型工具</div><div class="info-value">Claude Code + 原生HTML/CSS/JS</div></div>
+    <div class="info-item"><div class="info-label">搭建周期</div><div class="info-value">预计3-5天</div></div>
+    <div class="info-item"><div class="info-label">验证方式</div><div class="info-value">找2-3位运营同学实际操作+访谈</div></div>
+    <div class="info-item"><div class="info-label">验证重点</div><div class="info-value">流程是否顺畅、生成质量是否可用、还缺什么功能</div></div>
+  </div>
+  <div style="margin-top:16px;padding:16px;background:var(--gold-light);border-radius:8px;font-size:13px;color:var(--text2)">
+    💡 <strong>说明：</strong>此需求文档本身即为作品示例 — 展示了从业务方「想要一个AI写Listing的工具」这个模糊诉求出发，经过沟通梳理后形成结构化PRD的完整过程。真实项目中的具体细节会根据与业务方的深入沟通持续迭代。
+  </div>
+</div>
+
+<div class="doc-footer">
+  <p>本文档由 <strong>吴子嘉</strong> 整理输出 · AI辅助需求梳理与文档格式化</p>
+  <p style="margin-top:4px">文档展示的是需求分析方法论，非真实客户数据</p>
+</div>
+
+</div>
+</body>
+</html>
