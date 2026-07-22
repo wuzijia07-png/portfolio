@@ -1,0 +1,14 @@
+{
+    "name": "吴子嘉个人作品集",
+    "appid": "__WZJ_PORTFOLIO__",
+    "description": "AIGC运营个人作品集网站",
+    "version": "1.0.0",
+    "transformPx": false,
+    "h5": {
+        "template": "index.html",
+        "publicPath": "./",
+        "router": {
+            "mode": "hash"
+        }
+    }
+}
