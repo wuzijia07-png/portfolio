@@ -52,8 +52,10 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
 .btn-save{background:var(--gold);color:#fff;border:none}
 .btn-save:hover{background:#a07d2e}
 
-/* Delete btn on custom cards */
-.del-btn{position:absolute;top:8px;right:72px;padding:4px 10px;border-radius:100px;border:1px solid #e0cccc;background:#fff5f5;font-size:11px;color:#c04040;cursor:pointer;transition:.2s;font-family:inherit}
+/* Edit & Delete btns on custom cards */
+.edit-btn{position:absolute;top:8px;right:72px;padding:4px 10px;border-radius:100px;border:1px solid #d0d8e8;background:#f5f8ff;font-size:11px;color:#3d5a80;cursor:pointer;transition:.2s;font-family:inherit}
+.edit-btn:hover{background:#3d5a80;color:#fff;border-color:#3d5a80}
+.del-btn{position:absolute;top:8px;right:120px;padding:4px 10px;border-radius:100px;border:1px solid #e0cccc;background:#fff5f5;font-size:11px;color:#c04040;cursor:pointer;transition:.2s;font-family:inherit}
 .del-btn:hover{background:#c04040;color:#fff;border-color:#c04040}
 
 /* Custom badge */
@@ -131,7 +133,7 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
 <div class="modal-overlay" id="addModal">
   <div class="modal-box">
     <div class="modal-header">
-      <h3>✏️ 添加自定义模板</h3>
+      <h3 id="modalTitle">✏️ 添加自定义模板</h3>
       <button id="closeModal">&times;</button>
     </div>
     <div class="modal-body">
@@ -236,7 +238,7 @@ function render(cat='all'){
       <div class="prompt-desc">${p.desc}</div>
       <div class="prompt-content" style="position:relative">
         <button class="copy-btn" data-idx="${idx}" data-cat="${p.cat}">📋 复制</button>
-        ${isCustom?`<button class="del-btn" data-idx="${idx}" data-cat="${p.cat}">🗑 删除</button>`:''}
+        ${isCustom?`<button class="edit-btn" data-idx="${idx}" data-cat="${p.cat}">✏️ 编辑</button><button class="del-btn" data-idx="${idx}" data-cat="${p.cat}">🗑 删除</button>`:''}
         ${escapeHTML(p.template)}
       </div>
       <div class="prompt-tags">${p.tags.map(t=>`<span class="ptag">#${t}</span>`).join(' ')}</div>
@@ -261,6 +263,29 @@ function render(cat='all'){
         this.textContent='✅ 已复制';this.classList.add('copied');
         setTimeout(()=>{this.textContent='📋 复制';this.classList.remove('copied')},2000);
       });
+    });
+  });
+
+  // Edit buttons (custom only)
+  document.querySelectorAll('.edit-btn').forEach(btn=>{
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      const idx=parseInt(this.dataset.idx);
+      const cat=this.dataset.cat;
+      const items2=cat==='all'?getAllPrompts():getAllPrompts().filter(p=>p.cat===cat);
+      const item=items2[idx];if(!item||!item.custom)return;
+      // Find index in custom array
+      const customs=loadCustomTemplates();
+      const realIdx=customs.findIndex(c=>c.title===item.title&&c.template===item.template);
+      editingIndex=realIdx;
+      // Fill modal
+      document.getElementById('tmplCat').value=item.cat;
+      document.getElementById('tmplTitle').value=item.title;
+      document.getElementById('tmplScene').value=item.scene;
+      document.getElementById('tmplDesc').value=item.desc;
+      document.getElementById('tmplContent').value=item.template;
+      document.getElementById('modalTitle').textContent='✏️ 编辑自定义模板';
+      addModal.classList.add('open');
     });
   });
 
@@ -297,9 +322,22 @@ document.querySelectorAll('.cat-tab').forEach(tab=>{
   });
 });
 
-// === Add Template Modal ===
+// === Add/Edit Template Modal ===
+let editingIndex=null; // null=adding new, number=editing custom index
 const addModal=document.getElementById('addModal');
-document.getElementById('addTemplateBtn').addEventListener('click',()=>addModal.classList.add('open'));
+
+function openAddModal(){
+  editingIndex=null;
+  document.getElementById('tmplCat').value='listing';
+  document.getElementById('tmplTitle').value='';
+  document.getElementById('tmplScene').value='';
+  document.getElementById('tmplDesc').value='';
+  document.getElementById('tmplContent').value='';
+  document.getElementById('modalTitle').textContent='✏️ 添加自定义模板';
+  addModal.classList.add('open');
+}
+
+document.getElementById('addTemplateBtn').addEventListener('click',openAddModal);
 document.getElementById('closeModal').addEventListener('click',()=>addModal.classList.remove('open'));
 document.getElementById('cancelAdd').addEventListener('click',()=>addModal.classList.remove('open'));
 addModal.addEventListener('click',function(e){if(e.target===addModal)addModal.classList.remove('open')});
@@ -314,15 +352,22 @@ document.getElementById('saveTemplate').addEventListener('click',function(){
   if(!title||!content){alert('请至少填写模板标题和模板内容');return;}
 
   const customs=loadCustomTemplates();
-  customs.push({
+  const newEntry={
     cat:cat,
     title:title,
     scene:scene||'自定义',
     desc:desc||'自定义模板',
     template:content,
     tags:['自定义']
-  });
+  };
+
+  if(editingIndex!==null && editingIndex>=0 && editingIndex<customs.length){
+    customs[editingIndex]=newEntry; // update existing
+  }else{
+    customs.push(newEntry); // add new
+  }
   saveCustomTemplates(customs);
+  editingIndex=null;
 
   // Reset form
   document.getElementById('tmplTitle').value='';
@@ -331,7 +376,7 @@ document.getElementById('saveTemplate').addEventListener('click',function(){
   document.getElementById('tmplContent').value='';
   addModal.classList.remove('open');
 
-  // Switch to the category of the new template and re-render
+  // Switch to the category and re-render
   document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
   const targetTab=document.querySelector(`.cat-tab[data-cat="${cat}"]`);
   if(targetTab)targetTab.classList.add('active');
