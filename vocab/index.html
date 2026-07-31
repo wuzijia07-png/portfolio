@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>voca · 英语词汇</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;600&family=Noto+Sans+SC:wght@100;300;400;700&display=swap');
+
+:root{
+  --bg:#fef8f2; --surface:#fff;
+  --text:#1a1a1a; --text2:#7a7068; --text3:#c4bab0;
+  --mint:#B0E7DB; --mint-dark:#3d8b70;
+  --line:#2a221e; --green:#5a9a7a; --red:#c07070; --red2:#f0d0d0;
+  --radius:12px; --radius-lg:20px;
+  --warm:#fef8f2; --warm2:#fdf0e6; --warm3:#fce4d4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;
+  font-weight:200;background:linear-gradient(180deg,#fef8f2 0%,#fdf2e8 50%,#fef7f1 100%);color:var(--text);
+  max-width:430px;margin:0 auto;min-height:100vh;
+  position:relative;overflow-x:hidden;user-select:none;
+  letter-spacing:.01em;
+}
+button,input,select,textarea{font-family:inherit;font-weight:300;letter-spacing:.02em}
+
+/* ===== LOGIN PAGE ===== */
+.login-page{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:40px 24px;text-align:center;
+  background:linear-gradient(180deg,#fef8f2 0%,#fdf2e8 50%,#fef7f1 100%);
+}
+.login-icon{width:80px;height:80px;margin-bottom:24px}
+.login-page h1{font-size:28px;font-weight:100;letter-spacing:.04em;margin-bottom:8px}
+.login-page .sub{font-size:13px;color:var(--text2);font-weight:200;margin-bottom:40px}
+.phone-input-wrap{
+  width:100%;max-width:300px;position:relative;margin-bottom:24px;
+}
+.phone-input-wrap .prefix{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:15px;font-weight:300;color:var(--text2);z-index:1;
+}
+.phone-input{
+  width:100%;padding:16px 16px 16px 52px;border:1px solid #ddd;
+  border-radius:100px;font-size:17px;font-weight:200;text-align:left;
+  background:var(--bg);transition:.3s;letter-spacing:.06em;
+}
+.phone-input:focus{outline:none;border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.login-btn{
+  width:100%;max-width:300px;padding:16px;border:none;border-radius:100px;
+  background:var(--text);color:#fff;font-size:15px;font-weight:300;
+  cursor:pointer;transition:.3s;letter-spacing:.04em;
+}
+.login-btn:active{opacity:.8;transform:scale(.98)}
+.login-btn:disabled{opacity:.3;pointer-events:none}
+.login-hint{font-size:11px;color:var(--text3);margin-top:16px;font-weight:200}
+
+/* ===== MAIN APP (hidden until login) ===== */
+.app-container{display:none}
+.app-container.active{display:block}
+
+/* Bottom nav */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;background:rgba(255,255,255,.95);
+  backdrop-filter:blur(16px);display:flex;z-index:100;
+  padding:6px 0 env(safe-area-inset-bottom,8px);
+}
+.bottom-nav::before{content:'';position:absolute;top:0;left:24px;right:24px;height:.5px;background:#b8d8ce}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 0;cursor:pointer;color:var(--text3);transition:.2s;
+  font-size:10px;font-weight:300;border:none;background:none;font-family:inherit;
+}
+.nav-item.active{color:var(--text)}
+.nav-item svg{width:20px;height:20px}
+
+.page{display:none;padding:20px 20px 100px;animation:fadeUp .3s}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Typography */
+.greeting{font-size:26px;font-weight:100;margin-bottom:2px;letter-spacing:.03em}
+.date-text{font-size:11px;color:var(--text2);margin-bottom:20px;font-weight:200}
+
+/* Cards */
+.streak-card{
+  background:var(--surface);border-radius:var(--radius-lg);padding:24px;
+  margin-bottom:18px;border:1px solid #f0e8de;
+}
+.streak-row{display:flex;align-items:center;justify-content:space-between}
+.streak-num{font-size:48px;font-weight:100;line-height:1;letter-spacing:.02em}
+.streak-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:200}
+.streak-fire{font-size:32px}
+
+.prog-row{display:flex;gap:10px;margin-bottom:18px}
+.prog-card{
+  flex:1;background:var(--surface);border-radius:var(--radius);padding:18px;
+  text-align:center;border:1px solid #f0e8de;
+}
+.prog-card .n{font-size:30px;font-weight:100;color:var(--text)}
+.prog-card .l{font-size:11px;color:var(--text2);margin-top:2px;font-weight:200}
+
+.sec-hdr{font-size:15px;font-weight:300;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.03em}
+
+/* Book chip */
+.book-chip{
+  background:var(--surface);border:1px solid #f0e8de;border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;
+  justify-content:space-between;cursor:pointer;transition:.2s;
+}
+.book-chip:active{background:#fafafa}
+.book-chip .bn{font-size:14px;font-weight:300;display:flex;align-items:center;gap:10px}
+.book-chip .bp{font-size:11px;color:var(--text2);font-weight:200}
+.bar-wrap{width:56px;height:3px;background:#f0f0f0;border-radius:2px;margin-top:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:.5s}
+
+.start-btn{
+  display:block;width:100%;padding:16px;margin-top:16px;
+  background:var(--text);color:#fff;border:none;border-radius:100px;
+  font-size:15px;font-weight:300;cursor:pointer;font-family:inherit;
+  transition:.2s;letter-spacing:.04em;
+}
+.start-btn:active{opacity:.85;transform:scale(.98)}
+
+/* My page */
+.setting-card{
+  background:var(--surface);border:1px solid #f0e8de;border-radius:var(--radius);
+  padding:18px;margin-bottom:12px;
+}
+.setting-card h3{font-size:15px;font-weight:300;margin-bottom:12px;letter-spacing:.03em}
+
+.book-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.book-opt{
+  padding:16px 6px;border:1px solid #f0e8de;border-radius:var(--radius);
+  text-align:center;cursor:pointer;transition:.2s;font-size:12px;font-weight:300;
+  background:var(--surface);font-family:inherit;
+}
+.book-opt.active{border-color:var(--text);border-width:1.5px}
+.book-opt:active{background:#fafafa}
+
+.doodle-icon{display:block;margin:0 auto 6px;width:48px;height:48px}
+
+.form-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.form-row label{font-size:12px;font-weight:300;white-space:nowrap;color:var(--text2)}
+.form-row input,.form-row select{
+  padding:10px 14px;border:1px solid #f0e8de;border-radius:10px;
+  font-size:13px;width:100%;font-family:inherit;background:var(--bg);transition:.2s;font-weight:200;
+}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--text)}
+
+.stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:12px;font-weight:200}
+.stat-row:last-child{border-bottom:none}
+.stat-v{font-weight:300}
+
+/* Study */
+.study-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.back-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid #ddd;
+  background:var(--surface);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+  font-weight:100;
+}
+.back-btn:active{background:#f5f5f5}
+.study-ct{font-size:13px;font-weight:200;color:var(--text2)}
+.study-ct span{font-weight:300;color:var(--text)}
+
+.word-card{
+  background:var(--surface);border-radius:var(--radius-lg);padding:44px 24px;
+  text-align:center;border:1px solid #f0e8de;
+  min-height:330px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  transition:.2s;position:relative;
+}
+.word-card.revealed{background:#fafafa}
+.word-en{font-size:40px;font-weight:100;letter-spacing:.03em;color:var(--text)}
+.word-ph{font-size:13px;color:var(--text2);margin-top:4px;font-weight:200}
+.tap-hint{font-size:12px;color:var(--text3);margin-top:16px;font-weight:200}
+.word-detail{display:none;text-align:center;width:100%;animation:fadeUp .25s}
+.word-card.revealed .word-detail{display:block}
+.word-card.revealed .tap-hint{display:none}
+.word-zh{font-size:22px;font-weight:300;margin:10px 0;letter-spacing:.04em}
+.word-ex{font-size:14px;color:var(--text2);font-style:italic;margin-bottom:16px;line-height:1.6;font-weight:200}
+.word-emoji{font-size:60px;margin-bottom:8px;display:block}
+
+.speak-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+  border-radius:100px;border:1px solid #ddd;background:var(--surface);
+  font-size:13px;cursor:pointer;margin-bottom:8px;font-family:inherit;
+  transition:.2s;font-weight:300;
+}
+.speak-btn:active{background:#f5f5f5}
+
+.act-btns{display:flex;gap:12px;width:100%;margin-top:20px}
+.act-btn{flex:1;padding:16px;border-radius:100px;font-size:15px;font-weight:300;border:none;cursor:pointer;font-family:inherit;transition:.2s;letter-spacing:.03em}
+.act-btn:active{transform:scale(.97)}
+.btn-know{background:var(--text);color:#fff}
+.btn-no{background:var(--surface);color:var(--text);border:1px solid #ddd}
+
+/* Complete */
+.c-overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeUp .3s}
+.c-card{text-align:center;max-width:300px;width:90%;padding:36px 24px}
+.c-icon{font-size:60px;margin-bottom:12px}
+.c-card h2{font-size:20px;font-weight:200;margin-bottom:6px;letter-spacing:.04em}
+.c-card p{font-size:13px;color:var(--text2);margin-bottom:20px;font-weight:200}
+.c-stats{display:flex;gap:16px;justify-content:center;margin-bottom:24px}
+.c-st{text-align:center}
+.c-st .n{font-size:24px;font-weight:100}
+.c-st .l{font-size:11px;color:var(--text2);font-weight:200}
+.c-btn{
+  width:100%;padding:14px;background:var(--text);color:#fff;border:none;
+  border-radius:100px;font-size:15px;font-weight:300;cursor:pointer;
+  font-family:inherit;letter-spacing:.04em;
+}
+.c-btn:active{opacity:.85}
+
+/* Logout btn */
+.logout-link{font-size:11px;color:var(--text3);margin-top:16px;cursor:pointer;font-weight:200;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div class="login-page" id="loginPage">
+  <svg class="login-icon" viewBox="0 0 80 80"><circle cx="40" cy="28" r="10" fill="none" stroke="#2a221e" stroke-width="2" stroke-dasharray="16 4 18 3"/><path d="M18 64 Q18 44 40 44 Q62 44 62 64" fill="none" stroke="#2a221e" stroke-width="2.5" stroke-dasharray="20 5 24 3 18 4"/><ellipse cx="40" cy="22" rx="18" ry="14" fill="none" stroke="#2a221e" stroke-width="2" stroke-dasharray="22 3 16 5 20 4"/><circle cx="35" cy="26" r="2" fill="#2a221e"/><circle cx="45" cy="26" r="2" fill="#2a221e"/><path d="M37 32 Q40 36 43 32" fill="none" stroke="#2a221e" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <h1>v o c a</h1>
+  <p class="sub">英语词汇学习</p>
+  <div class="phone-input-wrap">
+    <span class="prefix">+86</span>
+    <input type="tel" class="phone-input" id="phoneInput" placeholder="请输入手机号" maxlength="11" autocomplete="tel">
+  </div>
+  <button class="login-btn" id="loginBtn" onclick="doLogin()">进入</button>
+  <p class="login-hint">手机号仅作为学习记录标识</p>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div class="app-container" id="appContainer">
+
+  <!-- HOME -->
+  <div class="page active" id="homePage">
+    <div class="greeting" id="greeting"></div>
+    <div class="date-text" id="dateText"></div>
+
+    <div class="streak-card">
+      <div class="streak-row">
+        <div><div class="streak-num" id="streakDays">0</div><div class="streak-label">连续打卡</div></div>
+        <div class="streak-fire">🔥</div>
+      </div>
+    </div>
+
+    <div class="prog-row">
+      <div class="prog-card"><div class="n" id="todayN">0</div><div class="l">今日已学</div></div>
+      <div class="prog-card"><div class="n" id="totalN">0</div><div class="l">累计掌握</div></div>
+    </div>
+
+    <div class="sec-hdr">词汇书</div>
+    <div id="bookList"></div>
+
+    <button class="start-btn" id="startBtn" onclick="startStudy()">开始今日背诵</button>
+    <p class="logout-link" onclick="doLogout()">切换账号</p>
+  </div>
+
+  <!-- MY PAGE -->
+  <div class="page" id="myPage">
+    <h2 style="font-size:22px;font-weight:100;margin-bottom:4px;letter-spacing:.04em">设置</h2>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:20px;font-weight:200">词汇书 · 每日学习量</p>
+    <div class="setting-card"><h3>词汇书</h3><div class="book-grid" id="bookGrid"></div></div>
+    <div class="setting-card">
+      <h3>每日学习量</h3>
+      <div class="form-row"><label>方式</label><select id="planMode" onchange="upPlan()"><option value="count">按词数</option><option value="days">按天数</option></select></div>
+      <div class="form-row" id="rowCount"><label>每日新词</label><input type="number" id="dailyCount" value="20" min="5" max="100" onchange="upPlan()"></div>
+      <div class="form-row" id="rowDays" style="display:none"><label>完成天数</label><input type="number" id="totalDays" value="30" min="1" max="365" onchange="upPlan()"></div>
+      <p style="font-size:11px;color:var(--text2);margin-top:4px;font-weight:200">共 <b id="totalV">0</b> 词 · 每日约 <b id="estD">-</b> 词</p>
+    </div>
+    <div class="setting-card">
+      <h3>统计</h3>
+      <div class="stat-row"><span>今日已学</span><span class="stat-v" id="sToday">0 词</span></div>
+      <div class="stat-row"><span>累计掌握</span><span class="stat-v" id="sMastered">0 词</span></div>
+      <div class="stat-row"><span>待复习</span><span class="stat-v" id="sReview">0 词</span></div>
+      <div class="stat-row"><span>当前词汇书</span><span class="stat-v" id="sBook">-</span></div>
+    </div>
+    <p class="logout-link" onclick="doLogout()" style="text-align:center;display:block">切换账号</p>
+  </div>
+
+  <!-- STUDY -->
+  <div class="page" id="studyPage">
+    <div class="study-top">
+      <button class="back-btn" onclick="quit()">✕</button>
+      <div class="study-ct"><span id="sProg">0/0</span></div>
+      <div style="width:38px"></div>
+    </div>
+    <div class="word-card" id="wordCard" onclick="reveal()">
+      <div class="word-en" id="wEn"></div>
+      <div class="word-ph" id="wPh"></div>
+      <div class="tap-hint">— 点击查看 —</div>
+      <div class="word-detail">
+        <div class="word-emoji" id="wEmoji"></div>
+        <div class="word-zh" id="wZh"></div>
+        <div class="word-ex" id="wEx"></div>
+        <button class="speak-btn" onclick="event.stopPropagation();speak()">🔊 朗读</button>
+      </div>
+    </div>
+    <div class="act-btns">
+      <button class="act-btn btn-no" id="btnNo" onclick="mark(false)" style="display:none">不认识</button>
+      <button class="act-btn btn-know" id="btnYes" onclick="mark(true)" style="display:none">认识</button>
+    </div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="c-overlay" id="cOverlay" style="display:none">
+    <div class="c-card">
+      <div class="c-icon">🌸</div>
+      <h2>今日背诵完成</h2>
+      <p>明天继续加油</p>
+      <div class="c-stats"><div class="c-st"><div class="n" id="cNew">0</div><div class="l">新学</div></div><div class="c-st"><div class="n" id="cRev">0</div><div class="l">复习</div></div><div class="c-st"><div class="n" id="cUnk">0</div><div class="l">巩固</div></div></div>
+      <button class="c-btn" onclick="done()">确认</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-page="homePage" onclick="goPage('homePage')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>主页</button>
+    <button class="nav-item" data-page="myPage" onclick="goPage('myPage')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>我的</button>
+  </nav>
+</div>
+
+<script>
+// ===== CRAYON DOODLE ICONS (toddler crayon style, black line, white bg) =====
+const doodles={
+  rainbow:`<svg class="doodle-icon" viewBox="0 0 54 54"><path d="M10 36 Q10 14 27 14 Q44 14 44 36" fill="none" stroke="#e07060" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="20 3 18 4"/><path d="M14 38 Q14 20 27 20 Q40 20 40 38" fill="none" stroke="#f0a040" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="16 4 22 3"/><path d="M18 40 Q18 26 27 26 Q36 26 36 40" fill="none" stroke="#e0d040" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="18 3 14 5"/><circle cx="27" cy="42" r="2.5" fill="none" stroke="#111" stroke-width="1.5"/></svg>`,
+  house:`<svg class="doodle-icon" viewBox="0 0 54 54"><polygon points="27,6 4,28 12,28 12,46 42,46 42,28 50,28" fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="22 4 20 3 24 5"/><rect x="18" y="32" width="8" height="14" fill="none" stroke="#111" stroke-width="2"/><circle cx="38" cy="39" r="3" fill="none" stroke="#111" stroke-width="1.8"/><line x1="26" y1="12" x2="36" y2="12" stroke="#111" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  tree:`<svg class="doodle-icon" viewBox="0 0 54 54"><rect x="24" y="34" width="6" height="16" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><circle cx="27" cy="18" r="11" fill="none" stroke="#6aab8e" stroke-width="2.5" stroke-dasharray="18 4 22 3 16 5"/><circle cx="20" cy="24" r="8" fill="none" stroke="#6aab8e" stroke-width="2.5" stroke-dasharray="14 5 20 3"/><circle cx="34" cy="24" r="8" fill="none" stroke="#6aab8e" stroke-width="2.5" stroke-dasharray="16 3 22 4"/><circle cx="27" cy="12" r="7" fill="none" stroke="#6aab8e" stroke-width="2" stroke-dasharray="12 5 18 3"/></svg>`,
+  butterfly:`<svg class="doodle-icon" viewBox="0 0 54 54"><ellipse cx="18" cy="24" rx="10" ry="14" fill="none" stroke="#d49595" stroke-width="2.5" stroke-dasharray="16 5 22 3"/><ellipse cx="36" cy="24" rx="10" ry="14" fill="none" stroke="#d49595" stroke-width="2.5" stroke-dasharray="18 3 14 4"/><ellipse cx="18" cy="38" rx="7" ry="9" fill="none" stroke="#d49595" stroke-width="2" stroke-dasharray="12 4 16 3"/><ellipse cx="36" cy="38" rx="7" ry="9" fill="none" stroke="#d49595" stroke-width="2" stroke-dasharray="14 3 18 5"/><line x1="27" y1="8" x2="27" y2="42" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><circle cx="27" cy="7" r="2" fill="none" stroke="#111" stroke-width="1.5"/><line x1="23" y1="5" x2="19" y2="9" stroke="#111" stroke-width="1.5" stroke-linecap="round"/><line x1="31" y1="5" x2="35" y2="9" stroke="#111" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  flower2:`<svg class="doodle-icon" viewBox="0 0 54 54"><circle cx="27" cy="28" r="6" fill="none" stroke="#111" stroke-width="2.5"/><line x1="27" y1="34" x2="27" y2="46" stroke="#6aab8e" stroke-width="2.5" stroke-linecap="round"/><path d="M19 38 Q12 44 10 40" fill="none" stroke="#6aab8e" stroke-width="2" stroke-linecap="round"/><path d="M35 38 Q42 44 44 40" fill="none" stroke="#6aab8e" stroke-width="2" stroke-linecap="round"/><ellipse cx="27" cy="16" rx="6" ry="9" fill="none" stroke="#e0a060" stroke-width="2.5" stroke-dasharray="14 4 18 3"/><ellipse cx="18" cy="20" rx="6" ry="9" fill="none" stroke="#e0a060" stroke-width="2" stroke-dasharray="16 3 12 5" transform="rotate(72 27 28)"/><ellipse cx="36" cy="20" rx="6" ry="9" fill="none" stroke="#e0a060" stroke-width="2" stroke-dasharray="18 4 14 3" transform="rotate(-72 27 28)"/><ellipse cx="18" cy="36" rx="6" ry="9" fill="none" stroke="#e0a060" stroke-width="2" stroke-dasharray="12 5 20 3" transform="rotate(144 27 28)"/><ellipse cx="36" cy="36" rx="6" ry="9" fill="none" stroke="#e0a060" stroke-width="2" stroke-dasharray="16 3 18 5" transform="rotate(-144 27 28)"/></svg>`,
+};
+
+// ===== VOCAB DATA =====
+const WE={
+  abandon:'🚪',absolute:'💯',absorb:'🧽',abstract:'🎨',abundant:'🈵',academy:'🏫',accelerate:'⚡',access:'🔑',accommodate:'🏨',accompany:'👫',accomplish:'✅',accurate:'🎯',achieve:'🏆',acknowledge:'🙋',adapt:'🦎',adequate:'👍',adjust:'🔧',administration:'📋',adopt:'🤲',advance:'📈',
+  abolish:'🚫',absurd:'🤪',abuse:'💔',acquaint:'🤝',adhere:'🔗',adjacent:'🏘️',administer:'💼',adolescent:'🧒',adverse:'👎',advocate:'📢',aesthetic:'✨',affiliate:'🔗',aggravate:'😤',aggregate:'🧮',agony:'😖',alien:'👽',allege:'🗣️',alleviate:'💊',allocate:'📦',ambiguous:'❓',
+  acquisition:'🛒',advent:'🌟',agenda:'📝',alienate:'💨',analogy:'🔄',anonymous:'🎭',apparatus:'⚗️',appreciate:'🙏',arbitrary:'🎲',articulate:'🗣️',assert:'💪',assess:'📏',attribute:'🏷️',authentic:'✅',autonomy:'🆓',barrier:'🚧',
+  abate:'🌊',aberration:'🌀',abet:'🔥',abridge:'✂️',accede:'🤝',accentuate:'💡',acclaim:'👏',accolade:'🏅',accost:'🫢',acme:'⛰️',acquiesce:'😐',acrid:'😤',acrimony:'💢',acumen:'🧠',adamant:'🪨',adept:'🎯',admonish:'⚠️',adorn:'💐',adroit:'🤹',adulation:'😍',
+  abundance:'🌟',accessory:'💍',accord:'🤝',accountability:'📋',accumulate:'📚',activate:'▶️',acute:'🔍',addict:'📱',
+};
+function gem(w){return WE[w.split(';')[0].toLowerCase()]||'📖'}
+
+const V={
+cet4:[{en:"abandon",zh:"放弃；抛弃",ph:"/əˈbændən/",ex:"He decided to abandon his plan."},{en:"absolute",zh:"绝对的；完全的",ph:"/ˈæbsəluːt/",ex:"I have absolute trust in her."},{en:"absorb",zh:"吸收；吸引",ph:"/əbˈzɔːrb/",ex:"Plants absorb water from the soil."},{en:"abstract",zh:"抽象的；摘要",ph:"/ˈæbstrækt/",ex:"The idea is too abstract to understand."},{en:"abundant",zh:"大量的；充足的",ph:"/əˈbʌndənt/",ex:"The region has abundant resources."},{en:"academy",zh:"学院；学会",ph:"/əˈkædəmi/",ex:"He studied at a military academy."},{en:"accelerate",zh:"加速；促进",ph:"/əkˈseləreɪt/",ex:"We need to accelerate the process."},{en:"access",zh:"进入；访问",ph:"/ˈækses/",ex:"Students have access to the library."},{en:"accommodate",zh:"容纳；提供住宿",ph:"/əˈkɑːmədeɪt/",ex:"The hotel can accommodate 500 guests."},{en:"accompany",zh:"陪伴；伴随",ph:"/əˈkʌmpəni/",ex:"She will accompany me to the party."},{en:"accomplish",zh:"完成；实现",ph:"/əˈkɑːmplɪʃ/",ex:"We accomplished our mission."},{en:"accurate",zh:"准确的；精确的",ph:"/ˈækjərət/",ex:"The data is highly accurate."},{en:"achieve",zh:"达到；取得",ph:"/əˈtʃiːv/",ex:"She achieved her goal."},{en:"acknowledge",zh:"承认；确认",ph:"/əkˈnɑːlɪdʒ/",ex:"He acknowledged his mistake."},{en:"adapt",zh:"适应；改编",ph:"/əˈdæpt/",ex:"We must adapt."},{en:"adequate",zh:"足够的；适当的",ph:"/ˈædɪkwət/",ex:"The supply is adequate."},{en:"adjust",zh:"调整；适应",ph:"/əˈdʒʌst/",ex:"Please adjust the volume."},{en:"administration",zh:"管理；行政",ph:"/ədˌmɪnɪˈstreɪʃn/",ex:"The administration made a new policy."},{en:"adopt",zh:"采纳；收养",ph:"/əˈdɑːpt/",ex:"We adopted a new approach."},{en:"advance",zh:"前进；进步",ph:"/ədˈvæns/",ex:"Technology continues to advance."}],
+cet6:[{en:"abolish",zh:"废除；取消",ph:"/əˈbɑːlɪʃ/",ex:"The government plans to abolish the tax."},{en:"absurd",zh:"荒谬的；可笑的",ph:"/əbˈsɜːrd/",ex:"That's an absurd suggestion."},{en:"abuse",zh:"滥用；虐待",ph:"/əˈbjuːs/",ex:"We should not abuse our power."},{en:"acquaint",zh:"使熟悉；使认识",ph:"/əˈkweɪnt/",ex:"Let me acquaint you with the facts."},{en:"adhere",zh:"遵守；附着",ph:"/ədˈhɪr/",ex:"We must adhere to the rules."},{en:"adjacent",zh:"邻近的；毗连的",ph:"/əˈdʒeɪsnt/",ex:"The two buildings are adjacent."},{en:"administer",zh:"管理；执行",ph:"/ədˈmɪnɪstər/",ex:"She administers the entire department."},{en:"adolescent",zh:"青少年",ph:"/ˌædəˈlesnt/",ex:"The program is for adolescents."},{en:"adverse",zh:"不利的；相反的",ph:"/ˈædvɜːrs/",ex:"The drug has adverse side effects."},{en:"advocate",zh:"提倡；拥护者",ph:"/ˈædvəkeɪt/",ex:"He advocates for environmental protection."},{en:"aesthetic",zh:"审美的；美学的",ph:"/esˈθetɪk/",ex:"The design has aesthetic value."},{en:"affiliate",zh:"使隶属；分支机构",ph:"/əˈfɪlieɪt/",ex:"The hospital is affiliated with the university."},{en:"aggravate",zh:"加重；恶化",ph:"/ˈæɡrəveɪt/",ex:"The cold aggravated his condition."},{en:"aggregate",zh:"总计；集合体",ph:"/ˈæɡrɪɡət/",ex:"The aggregate cost exceeded the budget."},{en:"agony",zh:"极大的痛苦",ph:"/ˈæɡəni/",ex:"He was in agony."},{en:"alien",zh:"外国的；外星人",ph:"/ˈeɪliən/",ex:"The concept seemed alien to him."},{en:"allege",zh:"声称；指控",ph:"/əˈledʒ/",ex:"The newspaper alleged corruption."},{en:"alleviate",zh:"减轻；缓解",ph:"/əˈliːvieɪt/",ex:"Medicine can alleviate the pain."},{en:"allocate",zh:"分配；拨出",ph:"/ˈæləkeɪt/",ex:"Funds were allocated for research."},{en:"ambiguous",zh:"模糊的；模棱两可的",ph:"/æmˈbɪɡjuəs/",ex:"The statement was intentionally ambiguous."}],
+ielts:[{en:"acquisition",zh:"获得；收购",ph:"/ˌækwɪˈzɪʃn/",ex:"Language acquisition takes time."},{en:"advent",zh:"到来；出现",ph:"/ˈædvent/",ex:"The advent of the internet changed everything."},{en:"advocate",zh:"提倡；拥护",ph:"/ˈædvəkeɪt/",ex:"She advocates for human rights."},{en:"agenda",zh:"议程；议事日程",ph:"/əˈdʒendə/",ex:"The meeting has a packed agenda."},{en:"alienate",zh:"疏远；使孤立",ph:"/ˈeɪliəneɪt/",ex:"His behavior alienated his friends."},{en:"allege",zh:"宣称；指控",ph:"/əˈledʒ/",ex:"The prosecution alleges fraud."},{en:"alleviate",zh:"减轻；缓和",ph:"/əˈliːvieɪt/",ex:"This medicine alleviates pain."},{en:"ambiguous",zh:"模棱两可的",ph:"/æmˈbɪɡjuəs/",ex:"The clause is deliberately ambiguous."},{en:"analogy",zh:"类比；比喻",ph:"/əˈnælədʒi/",ex:"He drew an analogy."},{en:"anonymous",zh:"匿名的",ph:"/əˈnɑːnɪməs/",ex:"The donation was anonymous."},{en:"apparatus",zh:"设备；仪器",ph:"/ˌæpəˈrætəs/",ex:"The laboratory has apparatus."},{en:"appreciate",zh:"欣赏；感激；升值",ph:"/əˈpriːʃieɪt/",ex:"I appreciate your help."},{en:"arbitrary",zh:"随意的；武断的",ph:"/ˈɑːrbɪtreri/",ex:"The decision seemed arbitrary."},{en:"articulate",zh:"清晰表达的；表达",ph:"/ɑːrˈtɪkjuleɪt/",ex:"She articulated her thoughts clearly."},{en:"assert",zh:"断言；坚持",ph:"/əˈsɜːrt/",ex:"He asserted his innocence."},{en:"assess",zh:"评估；评定",ph:"/əˈses/",ex:"We need to assess the situation."},{en:"attribute",zh:"归因于；属性",ph:"/əˈtrɪbjuːt/",ex:"She attributes her success to hard work."},{en:"authentic",zh:"真实的；可信的",ph:"/ɔːˈθentɪk/",ex:"Is this an authentic painting?"},{en:"autonomy",zh:"自治；自主权",ph:"/ɔːˈtɑːnəmi/",ex:"The region demands greater autonomy."},{en:"barrier",zh:"障碍；屏障",ph:"/ˈbæriər/",ex:"Language is a barrier to communication."}],
+toefl:[{en:"abate",zh:"减轻；减少",ph:"/əˈbeɪt/",ex:"The storm began to abate."},{en:"aberration",zh:"异常；偏差",ph:"/ˌæbəˈreɪʃn/",ex:"The result was a statistical aberration."},{en:"abet",zh:"教唆；煽动",ph:"/əˈbet/",ex:"He was accused of abetting the crime."},{en:"abridge",zh:"删节；缩短",ph:"/əˈbrɪdʒ/",ex:"The book was abridged for children."},{en:"accede",zh:"同意；就职",ph:"/əkˈsiːd/",ex:"The president acceded to their demands."},{en:"accentuate",zh:"强调；突出",ph:"/əkˈsentʃueɪt/",ex:"The lighting accentuates the architecture."},{en:"acclaim",zh:"称赞；欢呼",ph:"/əˈkleɪm/",ex:"The film was acclaimed by critics."},{en:"accolade",zh:"赞扬；荣誉",ph:"/ˈækəleɪd/",ex:"She received the highest accolades."},{en:"accost",zh:"搭话；搭讪",ph:"/əˈkɔːst/",ex:"A stranger accosted him."},{en:"acme",zh:"顶点；极致",ph:"/ˈækmi/",ex:"He reached the acme of his career."},{en:"acquiesce",zh:"默许；勉强同意",ph:"/ˌækwiˈes/",ex:"She acquiesced to their request."},{en:"acrid",zh:"辛辣的；刻薄的",ph:"/ˈækrɪd/",ex:"The acrid smoke filled the room."},{en:"acrimony",zh:"尖刻；激烈",ph:"/ˈækrɪmoʊni/",ex:"The debate was full of acrimony."},{en:"acumen",zh:"敏锐；聪明",ph:"/əˈkjuːmən/",ex:"She has great business acumen."},{en:"adamant",zh:"坚定的；固执的",ph:"/ˈædəmənt/",ex:"He was adamant about his decision."},{en:"adept",zh:"熟练的；内行",ph:"/əˈdept/",ex:"She is adept at negotiations."},{en:"admonish",zh:"告诫；警告",ph:"/ədˈmɑːnɪʃ/",ex:"The teacher admonished the student."},{en:"adorn",zh:"装饰；装扮",ph:"/əˈdɔːrn/",ex:"Flowers adorned the entrance."},{en:"adroit",zh:"灵巧的；熟练的",ph:"/əˈdrɔɪt/",ex:"He is an adroit negotiator."},{en:"adulation",zh:"奉承；谄媚",ph:"/ˌædʒuˈleɪʃn/",ex:"The celebrity enjoyed the adulation."}],
+kaoyan:[{en:"abolish",zh:"废除；取消",ph:"/əˈbɑːlɪʃ/",ex:"They voted to abolish the death penalty."},{en:"absurd",zh:"荒谬的",ph:"/əbˈsɜːrd/",ex:"It's absurd to think that way."},{en:"abundance",zh:"充裕；丰富",ph:"/əˈbʌndəns/",ex:"There is an abundance of food."},{en:"accessory",zh:"配件；附件",ph:"/əkˈsesəri/",ex:"Car accessories are sold separately."},{en:"acclaim",zh:"称赞；喝彩",ph:"/əˈkleɪm/",ex:"The novel was widely acclaimed."},{en:"accommodate",zh:"容纳；适应",ph:"/əˈkɑːmədeɪt/",ex:"The venue accommodates 2000."},{en:"accord",zh:"一致；协议",ph:"/əˈkɔːrd/",ex:"They reached an accord on trade."},{en:"accountability",zh:"问责制；责任",ph:"/əˌkaʊntəˈbɪləti/",ex:"Accountability is essential."},{en:"accumulate",zh:"积累；堆积",ph:"/əˈkjuːmjəleɪt/",ex:"Wealth accumulated over generations."},{en:"acquaint",zh:"使熟悉",ph:"/əˈkweɪnt/",ex:"I need to acquaint myself."},{en:"activate",zh:"激活；启动",ph:"/ˈæktɪveɪt/",ex:"Click to activate the software."},{en:"acute",zh:"敏锐的；急性的",ph:"/əˈkjuːt/",ex:"She has an acute sense of hearing."},{en:"addict",zh:"上瘾者；沉迷",ph:"/ˈædɪkt/",ex:"He is a social media addict."},{en:"adequate",zh:"足够的",ph:"/ˈædɪkwət/",ex:"The facilities are adequate."},{en:"adhere",zh:"坚持；遵守",ph:"/ədˈhɪr/",ex:"We adhere to strict quality standards."},{en:"adjacent",zh:"邻近的",ph:"/əˈdʒeɪsnt/",ex:"The hotel is adjacent to the station."},{en:"administer",zh:"管理；实施",ph:"/ədˈmɪnɪstər/",ex:"The fund is administered by a trust."},{en:"adolescent",zh:"青少年的",ph:"/ˌædəˈlesnt/",ex:"Adolescent behavior can be challenging."},{en:"advent",zh:"来临；出现",ph:"/ˈædvent/",ex:"The advent of AI transforms industries."},{en:"adverse",zh:"不利的；相反的",ph:"/əˈvɜːrs/",ex:"Adverse weather delayed the flight."}],
+};
+
+// ===== MULTI-USER STATE =====
+let USER='';
+let S=null,Q=[],I=0,U=[],ST={nw:0,rw:0,uk:0},cw=0;
+
+function storageKey(uid){return 'vocab_'+uid;}
+function def(){return{streak:0,lastDate:'',plan:{cet4:20,cet6:20,ielts:20,toefl:20,kaoyan:20},prog:{},book:'cet4',mode:'count',days:30};}
+function loadUser(uid){try{const s=localStorage.getItem(storageKey(uid));return s?{...def(),...JSON.parse(s)}:def();}catch(e){return def();}}
+function saveUser(){if(USER)localStorage.setItem(storageKey(USER),JSON.stringify(S));}
+function dk(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+
+// ===== LOGIN =====
+function doLogin(){
+  const phone=document.getElementById('phoneInput').value.trim();
+  if(!/^1\d{10}$/.test(phone)){alert('请输入正确的11位手机号');return;}
+  USER=phone;
+  S=loadUser(USER);
+  if(!S.prog[S.book])S.prog[S.book]={m:[],r:{},dl:{},lrd:{}};
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appContainer').classList.add('active');
+  saveUser();
+  rHome();
+}
+function doLogout(){
+  if(confirm('确定要退出登录吗？')){
+    USER='';S=null;
+    document.getElementById('loginPage').style.display='flex';
+    document.getElementById('appContainer').classList.remove('active');
+    document.getElementById('phoneInput').value='';
+  }
+}
+
+// ===== NAV =====
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-page="${id}"]`)?.classList.add('active');
+  if(id==='homePage')rHome();if(id==='myPage')rMy();
+}
+
+// ===== HOME =====
+function rHome(){
+  const n=new Date(),h=n.getHours();
+  const g=document.getElementById('greeting');
+  if(h<6)g.textContent='晚安';else if(h<9)g.textContent='早上好';else if(h<12)g.textContent='上午好';else if(h<14)g.textContent='中午好';else if(h<18)g.textContent='下午好';else g.textContent='晚上好';
+  document.getElementById('dateText').textContent=`${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} ${['日','一','二','三','四','五','六'][n.getDay()]}曜日`;
+  document.getElementById('streakDays').textContent=S.streak;
+  const b=V[S.book]||V.cet4,p=S.prog[S.book]||{m:[],r:{},dl:{}};
+  document.getElementById('todayN').textContent=getTL(S.book);
+  document.getElementById('totalN').textContent=(p.m?.length||0);
+
+  const ikeys=['rainbow','house','tree','butterfly','flower2'];
+  const books=[{k:'cet4',n:'四级',d:doodles[ikeys[0]],c:'#6aab8e'},{k:'cet6',n:'六级',d:doodles[ikeys[1]],c:'#5b8aaa'},{k:'ielts',n:'雅思',d:doodles[ikeys[2]],c:'#d4956a'},{k:'toefl',n:'托福',d:doodles[ikeys[3]],c:'#c07878'},{k:'kaoyan',n:'考研',d:doodles[ikeys[4]],c:'#8b7ec8'}];
+  document.getElementById('bookList').innerHTML=books.map(bk=>{
+    const bp=S.prog[bk.k]||{m:[],r:{}};
+    const pct=bp.m?Math.round((bp.m.length/(V[bk.k]?.length||1))*100):0;
+    return`<div class="book-chip" onclick="selBook('${bk.k}')"><div class="bn">${bk.d}<span>${bk.n}</span></div><div class="bp">${bp.m?.length||0}/${V[bk.k]?.length||0}<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${bk.c}"></div></div></div></div>`;
+  }).join('');
+  document.getElementById('startBtn').textContent=getTL(S.book)>0?'继续背诵':'开始今日背诵';
+}
+function getTL(bk){const t=dk(new Date()),p=S.prog[bk]||{m:[],r:{},dl:{}};return(p.dl?.[t]||[]).length;}
+function selBook(k){S.book=k;saveUser();rHome();rMy();}
+
+// ===== MY =====
+function rMy(){
+  const ikeys=['rainbow','house','tree','butterfly','flower2'];
+  const books=[{k:'cet4',n:'四级',d:doodles[ikeys[0]]},{k:'cet6',n:'六级',d:doodles[ikeys[1]]},{k:'ielts',n:'雅思',d:doodles[ikeys[2]]},{k:'toefl',n:'托福',d:doodles[ikeys[3]]},{k:'kaoyan',n:'考研',d:doodles[ikeys[4]]}];
+  document.getElementById('bookGrid').innerHTML=books.map(b=>`<button class="book-opt${S.book===b.k?' active':''}" onclick="selBook('${b.k}')">${b.d}<span style="display:block;margin-top:2px">${b.n}</span></button>`).join('');
+  document.getElementById('planMode').value=S.mode||'count';document.getElementById('dailyCount').value=S.plan[S.book]||20;document.getElementById('totalDays').value=S.days||30;
+  document.getElementById('rowCount').style.display=S.mode==='count'?'flex':'none';document.getElementById('rowDays').style.display=S.mode==='days'?'flex':'none';
+  upPlan();
+  const p=S.prog[S.book]||{m:[],r:{}};
+  document.getElementById('sToday').textContent=getTL(S.book)+' 词';document.getElementById('sMastered').textContent=(p.m?.length||0)+' 词';document.getElementById('sReview').textContent=Object.keys(p.r||{}).length+' 词';
+  document.getElementById('sBook').textContent={cet4:'四级',cet6:'六级',ielts:'雅思',toefl:'托福',kaoyan:'考研'}[S.book]||'-';
+}
+function upPlan(){
+  const m=document.getElementById('planMode').value;S.mode=m;
+  document.getElementById('rowCount').style.display=m==='count'?'flex':'none';document.getElementById('rowDays').style.display=m==='days'?'flex':'none';
+  const b=V[S.book]||V.cet4;document.getElementById('totalV').textContent=b.length;
+  if(m==='count'){const n=parseInt(document.getElementById('dailyCount').value)||20;S.plan[S.book]=n;document.getElementById('estD').textContent=n+' 词/天';}
+  else{const d=parseInt(document.getElementById('totalDays').value)||30;S.days=d;const n=Math.ceil(b.length/d);document.getElementById('estD').textContent=n+' 词/天';S.plan[S.book]=n;}
+  saveUser();
+}
+
+// ===== STUDY =====
+function startStudy(){
+  const b=V[S.book]||V.cet4,dp=S.plan[S.book]||20;
+  const p=S.prog[S.book]||{m:[],r:{},dl:{},lrd:{}};S.prog[S.book]=p;
+  if(!p.dl)p.dl={};if(!p.r)p.r={};if(!p.m)p.m=[];if(!p.lrd)p.lrd={};
+  const td=dk(new Date()),tl=p.dl?.[td]||[];
+  const rd=[];for(const[idx,d] of Object.entries(p.r)){if(d.nr&&d.nr<=td&&!tl.includes(parseInt(idx)))rd.push(parseInt(idx));}
+  const al=new Set([...p.m,...rd,...tl]);
+  const nw=b.map((_,i)=>i).filter(i=>!al.has(i)).slice(0,Math.max(0,dp-rd.length-tl.length));
+  Q=[...rd.slice(0,10),...nw];U=[];ST={nw:nw.length,rw:Math.min(rd.length,10),uk:0};I=0;
+  if(Q.length===0){alert('今日词汇已完成！');return;}
+  goPage('studyPage');showW();
+}
+function showW(){
+  if(I>=Q.length){if(U.length>0){Q=[...U];U=[];I=0;ST.uk=Q.length;}else{showC();return;}}
+  const b=V[S.book]||V.cet4,wi=Q[I],w=b[wi];
+  document.getElementById('wEn').textContent=w.en;document.getElementById('wPh').textContent=w.ph||'';
+  document.getElementById('wZh').textContent=w.zh;document.getElementById('wEx').textContent=w.ex||'';
+  document.getElementById('wEmoji').textContent=gem(w.en);
+  document.getElementById('wordCard').classList.remove('revealed');
+  document.getElementById('btnYes').style.display='none';document.getElementById('btnNo').style.display='none';
+  document.getElementById('sProg').textContent=`${I+1}/${Q.length+(U.length>0&&I===Q.length-1?U.length:0)}`;
+  cw=wi;
+}
+function reveal(){
+  if(document.getElementById('wordCard').classList.contains('revealed'))return;
+  document.getElementById('wordCard').classList.add('revealed');
+  document.getElementById('btnYes').style.display='block';document.getElementById('btnNo').style.display='block';
+  speak();
+}
+function speak(){if('speechSynthesis' in window){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(document.getElementById('wEn').textContent);u.lang='en-US';u.rate=.85;window.speechSynthesis.speak(u);}}
+function mark(k){
+  const p=S.prog[S.book]||{m:[],r:{},dl:{},lrd:{}};S.prog[S.book]=p;
+  const td=dk(new Date());if(!p.dl)p.dl={};if(!p.dl[td])p.dl[td]=[];if(!p.r)p.r={};if(!p.m)p.m=[];if(!p.lrd)p.lrd={};
+  if(k){p.dl[td].push(cw);if(!p.m.includes(cw))p.m.push(cw);const iv=((p.r[cw]?.iv||0)+1);const nd=new Date();nd.setDate(nd.getDate()+iv);p.r[cw]={iv:Math.min(iv,30),nr:dk(nd),ez:2.5};}
+  else{U.push(cw);p.r[cw]={iv:1,nr:td,ez:1.3};}
+  p.lrd[cw]=td;S.prog[S.book]=p;saveUser();I++;showW();
+}
+function showC(){
+  document.getElementById('cNew').textContent=ST.nw;document.getElementById('cRev').textContent=ST.rw;document.getElementById('cUnk').textContent=U.length;
+  document.getElementById('cOverlay').style.display='flex';
+  const td=dk(new Date());if(S.lastDate!==td){const y=new Date();y.setDate(y.getDate()-1);if(S.lastDate===dk(y))S.streak++;else S.streak=1;S.lastDate=td;saveUser();}
+}
+function done(){document.getElementById('cOverlay').style.display='none';goPage('homePage');}
+function quit(){if(I<Q.length&&document.getElementById('cOverlay').style.display==='none'){if(confirm('确定退出？进度已保留。'))goPage('homePage');}else goPage('homePage');}
+
+// Init
+(function(){
+  const td=dk(new Date());
+  // Check if previously logged in
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('appContainer').classList.remove('active');
+})();
+</script>
+</body>
+</html>
