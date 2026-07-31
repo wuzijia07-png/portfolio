@@ -577,7 +577,9 @@
           text:'个人作品集网站（当前页面）\n\n技术栈：HTML5 + CSS3 + 原生JavaScript\nAI工具：Claude Code全流程辅助 — 需求梳理→设计→编码→部署\n设计理念：明亮高级 · 响应式布局 · Tab切换无滚动\n\n这个项目展示了如何用AI工具将\"做一个个人网站\"的模糊需求快速转化为可交付原型。' },
         { id:'web-2', cat:'website', title:'美食旅游UniApp原型', desc:'Claude Code辅助 · 需求分析→原型搭建→完整交付', icon:'📱', type:'gallery', bg:'linear-gradient(135deg,#d8f0e0,#c8e8d4)',
           images: Array.from({length:8},(_,i)=>`../assets/images/图片${i+1}.png`),
-          text:'美食旅游跨平台应用 · AI编程原型验证项目\n\n技术栈：UniApp + Vue.js\nAI工具：Claude Code辅助前端代码生成与优化\n流程：需求分析 → 功能规划 → 原型搭建 → 交互验证 → 完整交付\n功能：首页推荐 · 景点/美食向导 · 详情展示 · 注册登录\n\n这个项目展示了如何使用AI编程工具快速将想法变为可交互原型，验证需求理解是否准确。' }
+          text:'美食旅游跨平台应用 · AI编程原型验证项目\n\n技术栈：UniApp + Vue.js\nAI工具：Claude Code辅助前端代码生成与优化\n流程：需求分析 → 功能规划 → 原型搭建 → 交互验证 → 完整交付\n功能：首页推荐 · 景点/美食向导 · 详情展示 · 注册登录\n\n这个项目展示了如何使用AI编程工具快速将想法变为可交互原型，验证需求理解是否准确。' },
+        { id:'prompt-lib', cat:'website', title:'AI提示词模板库', desc:'5大场景 · 11+模板 · 自定义添加 · 一键复制', icon:'📚', type:'page', pageSrc:'../assets/pages/prompt-library.html', bg:'linear-gradient(135deg,#e8eaf2,#dce0ea)',
+          text:'跨境电商运营场景提示词模板库，支持自定义添加/编辑/删除模板，手机/桌面视图切换。体现了需求抽象、流程梳理与工具化沉淀能力。' }
     ];
 
     const catLabel = { ppt:'📊 PPT作品', poster:'🖼️ 海报/图文', video:'🎬 短视频', website:'🌐 网站/智能体' };
@@ -646,6 +648,8 @@
                 <span class="pg" id="galPg">1 / ${item.images.length}</span>
                 <button id="galNext">→</button>
             </div>`;
+        }else if(item.type==='page'){
+            v=`<iframe src="${item.pageSrc}" style="width:100%;height:70vh;border:none;border-radius:8px;" title="${item.title}"></iframe>`;
         }
         pfModalBody.innerHTML=`<h3>${item.title}</h3><div class="meta">${catLabel[item.cat]||item.cat} · ${item.desc}</div>${v}`;
         pfModal.classList.add('open');
