@@ -490,7 +490,6 @@
                 <div class="panel-subtitle">点击卡片查看详情</div>
                 <div class="pf-filter" id="pfFilter">
                     <button class="pf-filter-btn active" data-filter="all">全部</button>
-                    <button class="pf-filter-btn" data-filter="ppt">📊 PPT</button>
                     <button class="pf-filter-btn" data-filter="poster">🖼️ 海报图文</button>
                     <button class="pf-filter-btn" data-filter="website">🌐 网站/智能体</button>
                 </div>
@@ -569,8 +568,6 @@
 
     // === PORTFOLIO DATA ===
     const pfItems = [
-        { id:'ppt-1', cat:'ppt', title:'毕业答辩PPT', desc:'电子信息工程专业 · 毕业设计答辩演示文稿', icon:'🎓', type:'pptx', pptxSrc:'../assets/ppt/答辩ppt.pptx', bg:'linear-gradient(135deg,#e8ecf2,#dce3ea)',
-          text:'电子信息工程专业 · 毕业设计答辩PPT\n\n内容涵盖：选题背景 · 技术方案 · 系统设计 · 实现过程 · 成果展示\n\n格式：PowerPoint .pptx 可下载查看' },
         { id:'poster-1', cat:'poster', title:'「春分至，万物苏」摄影比赛海报', desc:'广州航海学院 · FindMore港航公众号 · AI辅助设计', icon:'🌿', type:'img', imgSrc:'../assets/images/photography-poster.jpg', bg:'linear-gradient(135deg,#e8f2e4,#d5e8d0)',
           text:'「春分至，万物苏」校园摄影比赛宣传海报\n\n主题：用镜头捕捉春天，记录万物复苏的瞬间\n投稿邮箱：1824745470@qq.com\n主办：广州航海学院 · FindMore港航公众号\n\n设计工具：Photoshop / Canva · AI辅助文案与排版' },
         { id:'web-1', cat:'website', title:'个人作品集网站', desc:'Claude Code全流程辅助，从需求到部署一站式AI协作', icon:'🌐', type:'web', bg:'linear-gradient(135deg,#e0e8f0,#d0dce8)',
@@ -579,7 +576,9 @@
           images: Array.from({length:8},(_,i)=>`../assets/images/图片${i+1}.png`),
           text:'美食旅游跨平台应用 · AI编程原型验证项目\n\n技术栈：UniApp + Vue.js\nAI工具：Claude Code辅助前端代码生成与优化\n流程：需求分析 → 功能规划 → 原型搭建 → 交互验证 → 完整交付\n功能：首页推荐 · 景点/美食向导 · 详情展示 · 注册登录\n\n这个项目展示了如何使用AI编程工具快速将想法变为可交互原型，验证需求理解是否准确。' },
         { id:'prompt-lib', cat:'website', title:'AI提示词模板库', desc:'5大场景 · 11+模板 · 自定义添加 · 一键复制', icon:'📚', type:'page', pageSrc:'../assets/pages/prompt-library.html', bg:'linear-gradient(135deg,#e8eaf2,#dce0ea)',
-          text:'跨境电商运营场景提示词模板库，支持自定义添加/编辑/删除模板，手机/桌面视图切换。体现了需求抽象、流程梳理与工具化沉淀能力。' }
+          text:'跨境电商运营场景提示词模板库，支持自定义添加/编辑/删除模板，手机/桌面视图切换。体现了需求抽象、流程梳理与工具化沉淀能力。' },
+        { id:'req-demo', cat:'website', title:'AI辅助需求分析全流程Demo', desc:'需求访谈→文档→原型→验证 · 完整闭环', icon:'🔍', type:'page', pageSrc:'../assets/pages/ai-requirements-demo.html', bg:'linear-gradient(135deg,#faf0e0,#f5e4c8)',
+          text:'以「运营周报自动生成工具」为例，展示从模糊诉求到可交互原型的完整需求分析闭环。包含需求访谈记录、结构化PRD、AI搭建的可交互原型、用户验证反馈及迭代计划。直接命中JD三大核心职责。' }
     ];
 
     const catLabel = { ppt:'📊 PPT作品', poster:'🖼️ 海报/图文', video:'🎬 短视频', website:'🌐 网站/智能体' };

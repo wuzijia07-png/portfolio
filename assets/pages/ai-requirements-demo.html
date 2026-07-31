@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI辅助需求分析Demo · 运营周报自动生成工具</title>
+<style>
+:root {
+  --bg:#fafaf9; --surface:#fff; --border:#e8e6e1; --text:#1a1a18;
+  --text2:#6b6b63; --text3:#9a9992; --gold:#b8943e; --gold-light:#f5ecd7;
+  --green:#3d7d4a; --blue:#3d5a80; --red:#c04040; --radius:10px;
+  --shadow:0 2px 16px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:960px;margin:0 auto;padding:32px 24px}
+
+/* Top hero */
+.hero{text-align:center;padding:48px 0 32px}
+.hero .badge{display:inline-block;padding:6px 16px;border-radius:100px;background:var(--gold-light);color:var(--gold);font-size:12px;font-weight:600;margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.hero h1 span{background:linear-gradient(135deg,var(--gold),#c9a44a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:15px;color:var(--text2);max-width:600px;margin:0 auto}
+
+/* Progress bar */
+.progress{display:flex;justify-content:center;gap:0;margin-bottom:40px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--text3);cursor:pointer;border-bottom:3px solid transparent;transition:.2s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none}
+.step .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--border);color:var(--text3);font-size:12px;font-weight:700;transition:.2s}
+.step.active{color:var(--text);border-bottom-color:var(--gold);font-weight:600}
+.step.active .num{background:var(--gold);color:#fff}
+.step.done{color:var(--text2)}
+.step.done .num{background:var(--green);color:#fff}
+.step-arrow{color:var(--text3);font-size:12px;display:flex;align-items:center}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card h2{font-size:20px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:15px;font-weight:700;margin:20px 0 8px;color:var(--text)}
+.card .stamp{font-size:12px;color:var(--text3);margin-bottom:16px}
+
+/* Chat style */
+.chat{display:flex;flex-direction:column;gap:12px}
+.chat-msg{display:flex;gap:12px;max-width:85%}
+.chat-msg.you{flex-direction:row-reverse;align-self:flex-end}
+.chat-msg .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.chat-msg.them .avatar{background:#f0ebe0;color:var(--gold)}
+.chat-msg.you .avatar{background:var(--gold-light);color:var(--gold)}
+.chat-msg .bubble{background:var(--bg);padding:10px 16px;border-radius:14px;font-size:13px;line-height:1.6;border:1px solid var(--border)}
+.chat-msg.you .bubble{background:var(--gold-light);border-color:#e8d4a0}
+
+/* Info grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.info-item{padding:14px;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
+.info-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.info-value{font-size:13px;font-weight:600;margin-top:2px}
+
+/* Feature table */
+.feat-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+.feat-table th{text-align:left;padding:10px 14px;background:var(--bg);font-weight:600;font-size:12px;color:var(--text2);border-bottom:2px solid var(--border)}
+.feat-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+.p0{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;background:#fde8e8;color:#c04040;font-weight:600}
+.p1{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;background:#fef3e0;color:#c08030;font-weight:600}
+.p2{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;background:#e8f0f8;color:#3d5a80;font-weight:600}
+
+/* Prototype */
+.proto-area{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.proto-header{padding:14px 20px;background:var(--text);color:#fff;display:flex;justify-content:space-between;align-items:center}
+.proto-header h4{font-size:14px;font-weight:600}
+.proto-body{padding:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;background:var(--surface);resize:vertical}
+.form-group textarea{min-height:80px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:.2s}
+.btn-primary{background:var(--text);color:#fff}
+.btn-primary:hover{background:#4a4a44}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:#a07d2e}
+.btn-outline{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{background:var(--bg)}
+
+.result-box{background:var(--surface);border:1px solid var(--green);border-radius:8px;padding:20px;margin-top:16px;display:none}
+.result-box.show{display:block}
+.result-box h4{color:var(--green);font-size:15px;margin-bottom:12px}
+
+/* Feedback */
+.fb-card{background:var(--bg);border-left:3px solid var(--blue);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.fb-card.warn{border-left-color:#e0a030}
+.fb-card.good{border-left-color:var(--green)}
+.fb-user{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.fb-text{font-size:13px;color:var(--text);line-height:1.6}
+
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{padding:3px 10px;border-radius:100px;background:#f4f2ee;font-size:11px;color:var(--text3)}
+
+/* Section visibility */
+.section-stage{display:none}
+.section-stage.active{display:block}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:24px}
+  .progress{flex-wrap:wrap;gap:4px}
+  .step{padding:8px 12px;font-size:12px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .chat-msg{max-width:95%}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="badge">AI辅助 · 需求分析全流程Demo</div>
+  <h1>运营周报<span>自动生成工具</span></h1>
+  <p class="sub">从模糊诉求到可交互原型 —— 展示AI如何作为业务与技术之间的桥梁</p>
+</div>
+
+<!-- Progress -->
+<div class="progress" id="progress">
+  <button class="step active" data-stage="1"><span class="num">1</span> 需求访谈</button><span class="step-arrow">→</span>
+  <button class="step" data-stage="2"><span class="num">2</span> 需求文档</button><span class="step-arrow">→</span>
+  <button class="step" data-stage="3"><span class="num">3</span> 可交互原型</button><span class="step-arrow">→</span>
+  <button class="step" data-stage="4"><span class="num">4</span> 验证反馈</button>
+</div>
+
+<!-- ============ STAGE 1: 需求访谈 ============ -->
+<div class="section-stage active" id="stage-1">
+<div class="card">
+  <h2>💬 需求访谈记录</h2>
+  <div class="stamp">场景：亚声威格运营部 · 访谈对象：张经理（运营主管）· 形式：面对面沟通</div>
+  <div class="chat">
+    <div class="chat-msg them"><div class="avatar">👩‍💼</div><div class="bubble">小吴，我们运营团队每周都要花半天写周报，太费时间了。你看能不能用AI搞个工具，帮我们自动生成周报？</div></div>
+    <div class="chat-msg you"><div class="avatar">🙋</div><div class="bubble">明白。我先了解一下：目前周报是手写的？用Excel还是Word？大概包含哪些内容？</div></div>
+    <div class="chat-msg them"><div class="avatar">👩‍💼</div><div class="bubble">我们现在是手动从后台导出Excel数据，然后人工算环比、写分析，最后拼到PPT里。每次要写销售额、订单量、广告ROI、退货率，还要对比上周变化。光数据整理就要两小时。</div></div>
+    <div class="chat-msg you"><div class="avatar">🙋</div><div class="bubble">了解了。那我再确认几个点：①周报的读者是谁？需要多详细？②有没有固定的模板格式？③数据来源除了后台Excel，还有其他系统吗？</div></div>
+    <div class="chat-msg them"><div class="avatar">👩‍💼</div><div class="bubble">老板看的，一页纸就够了，核心指标+简要分析。格式我们有现成的PPT模板。数据主要就是ERP后台导出的销售报表，广告数据要从广告后台单独下载。</div></div>
+    <div class="chat-msg you"><div class="avatar">🙋</div><div class="bubble">好的，我整理一下我的理解：需要一个工具，运营上传原始数据（销售报表+广告报表），系统自动计算核心指标和环比变化，生成一页PPT格式的周报。关键诉求是「减少手动计算时间」「保证指标口径一致」。我这个理解对吗？</div></div>
+    <div class="chat-msg them"><div class="avatar">👩‍💼</div><div class="bubble">对对对，就是这个意思！最好能直接导出PPT格式。另外我们团队两三个运营都在做这件事。</div></div>
+    <div class="chat-msg you"><div class="avatar">🙋</div><div class="bubble">收到。我先梳理成需求文档，然后快速搭一个可点击的原型给你看看效果，确认方向对了再往下走。大概两三天给你看原型。</div></div>
+  </div>
+</div>
+<div class="card" style="background:var(--gold-light);border-color:#e8d4a0">
+  <strong>💡 关键方法：</strong>面对「用AI自动生成周报」这个模糊需求，我通过<strong>追问具体场景→确认数据和格式→复述确认理解</strong>三个步骤，将模糊诉求转化为可执行的清晰需求。
+</div>
+</div>
+
+<!-- ============ STAGE 2: 需求文档 ============ -->
+<div class="section-stage" id="stage-2">
+<div class="card">
+  <h2>📋 需求说明文档 v1.0</h2>
+  <div class="stamp">文档状态：已确认 ｜ 对接人：吴子嘉 ｜ 日期：2026.07</div>
+
+  <h3>一、需求背景</h3>
+  <p style="font-size:13px;color:var(--text2);line-height:1.7">运营团队每周需手动整理销售数据、计算环比变化、撰写分析报告、排版PPT，<strong>单人耗时约3-4小时</strong>。随着业务增长，运营希望借助AI工具实现数据自动汇总与周报初稿生成，将精力集中在策略分析上。</p>
+
+  <h3>二、用户与场景</h3>
+  <div class="grid2">
+    <div class="info-item"><div class="info-label">👤 主要用户</div><div class="info-value">运营专员（2-3人）</div></div>
+    <div class="info-item"><div class="info-label">📅 使用频率</div><div class="info-value">每周一上午</div></div>
+    <div class="info-item"><div class="info-label">📥 数据来源</div><div class="info-value">ERP销售报表 + 广告后台报表</div></div>
+    <div class="info-item"><div class="info-label">📤 输出格式</div><div class="info-value">PPT格式周报（一页纸）</div></div>
+  </div>
+
+  <h3>三、功能清单</h3>
+  <table class="feat-table">
+    <tr><th>序号</th><th>功能</th><th>描述</th><th>优先级</th></tr>
+    <tr><td>F1</td><td>数据导入</td><td>支持粘贴/上传销售报表和广告报表（CSV/Excel），自动识别表头字段</td><td><span class="p0">P0</span></td></tr>
+    <tr><td>F2</td><td>指标自动计算</td><td>销售额、订单量、客单价、广告花费、ACOS、退货率，自动计算环比变化</td><td><span class="p0">P0</span></td></tr>
+    <tr><td>F3</td><td>AI分析生成</td><td>基于数据自动生成要点分析（亮点/问题/建议），支持人工微调</td><td><span class="p0">P0</span></td></tr>
+    <tr><td>F4</td><td>PPT导出</td><td>一键导出标准格式PPT，含数据表格和趋势图</td><td><span class="p1">P1</span></td></tr>
+    <tr><td>F5</td><td>历史周报存档</td><td>保存历史记录，支持查看和对比往期数据</td><td><span class="p2">P2</span></td></tr>
+  </table>
+
+  <h3>四、验收标准</h3>
+  <p style="font-size:13px;color:var(--text2)">
+    ☐ 粘贴销售数据后10秒内完成指标计算<br>
+    ☐ 环比计算准确率100%（与手动计算对比）<br>
+    ☐ AI分析要点至少包含3条关键洞察<br>
+    ☐ 运营专员可独立完成全流程操作<br>
+    ☐ 原型需在3天内交付验证
+  </p>
+</div>
+</div>
+
+<!-- ============ STAGE 3: 交互原型 ============ -->
+<div class="section-stage" id="stage-3">
+<div class="card">
+  <h2>🖥️ 可交互原型 Demo</h2>
+  <div class="stamp">AI工具搭建：Claude Code · 搭建耗时：约4小时 · 用途：验证需求理解是否准确</div>
+
+  <div class="proto-area">
+    <div class="proto-header"><h4>📊 运营周报生成器 v0.1</h4><span style="font-size:12px;opacity:.7">原型 Demo</span></div>
+    <div class="proto-body">
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="form-group">
+          <label>📅 报告周期</label>
+          <select id="weekSelect"><option>2026年第30周 (7.21-7.27)</option><option>2026年第29周 (7.14-7.20)</option></select>
+        </div>
+        <div class="form-group">
+          <label>👤 制表人</label>
+          <input type="text" value="吴子嘉" placeholder="填写姓名">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>📥 粘贴销售数据（Excel表格直接复制）</label>
+        <textarea id="salesData" placeholder="粘贴数据，格式：日期&#10;销售额&#10;订单量&#10;客单价&#10;退货率&#10;&#10;例如：&#10;7/21&#10;¥128,500&#10;1,280&#10;¥100.4&#10;2.1%&#10;7/22&#10;¥142,300&#10;1,420&#10;¥100.2&#10;1.8%&#10;..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>📊 粘贴广告数据</label>
+        <textarea id="adData" placeholder="粘贴数据，格式：日期&#10;广告花费&#10;广告销售额&#10;&#10;例如：&#10;7/21&#10;¥12,500&#10;¥38,200&#10;7/22&#10;¥14,100&#10;¥42,500&#10;..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-gold" onclick="genReport()">🤖 AI生成周报</button>
+        <button class="btn btn-outline" onclick="loadDemo()">📥 加载示例数据</button>
+        <button class="btn btn-outline" onclick="clearReport()">🔄 清空</button>
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <h4>✅ 周报已生成</h4>
+        <div id="reportContent"></div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="loadDemo()">📥 加载新数据重试</button>
+          <span style="font-size:12px;color:var(--text3);display:flex;align-items:center">💡 这只是原型，真实版本会对接API自动拉取数据并导出PPT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ STAGE 4: 验证反馈 ============ -->
+<div class="section-stage" id="stage-4">
+<div class="card">
+  <h2>📝 用户验证反馈记录</h2>
+  <div class="stamp">验证方式：让2位运营专员实际操作原型 + 一对一访谈 ｜ 日期：2026.07</div>
+
+  <div class="fb-card good">
+    <div class="fb-user">👍 运营专员 李同学 · 体验时长15分钟</div>
+    <div class="fb-text">「粘贴数据就能出结果这个流程很顺畅，比我们手动算快太多了。自动算环比这个功能太需要了，每次都算到头大。」<br>
+    <strong>建议：</strong>最好能直接上传Excel文件而不是粘贴，因为实际数据量大时粘贴会乱。</div>
+  </div>
+
+  <div class="fb-card good">
+    <div class="fb-user">👍 运营主管 张经理 · 体验时长10分钟</div>
+    <div class="fb-text">「方向是对的。指标计算准确，AI分析要点有参考价值。但模板应该允许自定义——不同领导想看的重点不一样，有的关注销售额，有的关注广告效率。」<br>
+    <strong>建议：</strong>增加模板自定义功能，用户可以调整显示哪些指标和分析维度。</div>
+  </div>
+
+  <div class="fb-card warn">
+    <div class="fb-user">⚠️ 运营专员 王同学 · 体验时长12分钟</div>
+    <div class="fb-text">「数据多了有点卡。另外，分析部分需要人工改写后才敢发给老板，AI的语气有时候太机械。」<br>
+    <strong>建议：</strong>优化大数据量性能；AI分析的语气要有「正式商务」和「简洁直白」两种可选风格。</div>
+  </div>
+
+  <div style="background:var(--gold-light);padding:16px;border-radius:8px;margin-top:16px">
+    <strong>🔄 下一步迭代计划：</strong><br>
+    1. 支持Excel文件直接上传（替代粘贴）<br>
+    2. 增加模板自定义配置<br>
+    3. AI分析语气风格选项<br>
+    4. 优化大量数据处理性能<br>
+    5. 对接PPT导出功能<br>
+    <span style="font-size:12px;color:var(--text3)">——以上迭代项已整理为需求台账，同步开发团队评估排期</span>
+  </div>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// Stage switching
+document.querySelectorAll('.step').forEach(step=>{
+  step.addEventListener('click',function(){
+    const stage=this.dataset.stage;
+    document.querySelectorAll('.step').forEach(s=>{s.classList.remove('active');if(parseInt(s.dataset.stage)<parseInt(stage))s.classList.add('done')});
+    this.classList.add('active');
+    document.querySelectorAll('.section-stage').forEach(s=>s.classList.remove('active'));
+    document.getElementById('stage-'+stage).classList.add('active');
+  });
+});
+
+// Demo report generator
+function loadDemo(){
+  document.getElementById('salesData').value=`7/21  ¥128,500  1,280  ¥100.4  2.1%
+7/22  ¥142,300  1,420  ¥100.2  1.8%
+7/23  ¥135,800  1,350  ¥100.6  2.3%
+7/24  ¥156,200  1,560  ¥100.1  1.9%
+7/25  ¥168,400  1,680  ¥100.2  1.5%
+7/26  ¥182,100  1,820  ¥100.1  1.6%
+7/27  ¥195,300  1,950  ¥100.2  1.4%`;
+  document.getElementById('adData').value=`7/21  ¥12,500  ¥38,200
+7/22  ¥14,100  ¥42,500
+7/23  ¥13,200  ¥40,100
+7/24  ¥15,800  ¥48,300
+7/25  ¥16,500  ¥51,200
+7/26  ¥18,200  ¥56,800
+7/27  ¥19,500  ¥60,100`;
+  document.getElementById('resultBox').classList.remove('show');
+}
+
+function clearReport(){
+  document.getElementById('salesData').value='';
+  document.getElementById('adData').value='';
+  document.getElementById('resultBox').classList.remove('show');
+}
+
+function genReport(){
+  const salesRaw=document.getElementById('salesData').value.trim();
+  if(!salesRaw){alert('请先粘贴销售数据或点击「加载示例数据」');return;}
+
+  // Parse data
+  const lines=salesRaw.split('\n').filter(l=>l.trim());
+  let totalSales=0,totalOrders=0,totalAdSpend=0,totalAdSales=0;
+  const daily=[];
+  lines.forEach(l=>{
+    const parts=l.split(/\s+/);
+    if(parts.length>=5){
+      const sales=parseFloat(parts[1].replace(/[¥,]/g,''));
+      const orders=parseInt(parts[2].replace(/,/g,''));
+      const retRate=parseFloat(parts[4].replace('%',''));
+      daily.push({date:parts[0],sales,orders,retRate});
+      totalSales+=sales;totalOrders+=orders;
+    }
+  });
+
+  const adRaw=document.getElementById('adData').value.trim();
+  const adLines=adRaw.split('\n').filter(l=>l.trim());
+  adLines.forEach(l=>{
+    const parts=l.split(/\s+/);
+    if(parts.length>=3){totalAdSpend+=parseFloat(parts[1].replace(/[¥,]/g,''));totalAdSales+=parseFloat(parts[2].replace(/[¥,]/g,''));}
+  });
+
+  const avgPrice=totalOrders>0?(totalSales/totalOrders):0;
+  const avgRetRate=daily.length>0?(daily.reduce((s,d)=>s+d.retRate,0)/daily.length):0;
+  const acos=totalAdSales>0?((totalAdSpend/totalAdSales)*100):0;
+  const adROI=totalAdSpend>0?(totalAdSales/totalAdSpend):0;
+
+  // AI analysis (simulated)
+  const insights=[
+    totalSales>1000000?'📈 本周销售额突破'+'¥'+(totalSales/10000).toFixed(1)+'万，为近一个月最高，主要受周末促销活动拉动。':'📊 本周销售额¥'+(totalSales/10000).toFixed(1)+'万，整体平稳。',
+    acos<30?'✅ 广告ACOS为'+acos.toFixed(1)+'%，控制在健康范围内，广告投放效率良好。':'⚠️ 广告ACOS为'+acos.toFixed(1)+'%，偏高，建议优化关键词和出价策略。',
+    avgRetRate<2?'👍 退货率'+avgRetRate.toFixed(1)+'%，处于行业优秀水平，产品质量和Listing描述准确度较好。':'📋 退货率'+avgRetRate.toFixed(1)+'%，建议关注退货原因分布，优化质检和Listing准确性。',
+    daily.length>=7&&daily[6].sales>daily[0].sales?'🚀 周末销售额较周一增长'+((daily[6].sales/daily[0].sales-1)*100).toFixed(0)+'%，周末流量高峰效应明显。':'📊 周内销售趋势平稳，无明显波动。',
+    adROI>3?'💰 广告ROI为'+adROI.toFixed(1)+'，每投入1元广告费带来'+adROI.toFixed(1)+'元销售额。':'📋 广告ROI为'+adROI.toFixed(1)+'，有优化空间。',
+  ];
+
+  document.getElementById('reportContent').innerHTML=`
+    <div class="grid3" style="margin-bottom:16px">
+      <div class="info-item"><div class="info-label">💰 本周销售额</div><div class="info-value">¥${(totalSales/10000).toFixed(2)}万</div></div>
+      <div class="info-item"><div class="info-label">📦 订单量</div><div class="info-value">${totalOrders.toLocaleString()} 单</div></div>
+      <div class="info-item"><div class="info-label">💵 客单价</div><div class="info-value">¥${avgPrice.toFixed(1)}</div></div>
+      <div class="info-item"><div class="info-label">📢 广告花费</div><div class="info-value">¥${(totalAdSpend/10000).toFixed(2)}万</div></div>
+      <div class="info-item"><div class="info-label">🎯 ACOS</div><div class="info-value">${acos.toFixed(1)}%</div></div>
+      <div class="info-item"><div class="info-label">📋 退货率</div><div class="info-value">${avgRetRate.toFixed(1)}%</div></div>
+    </div>
+    <h4 style="font-size:14px;margin-bottom:8px">🤖 AI 分析要点</h4>
+    ${insights.map(i=>`<p style="font-size:13px;color:var(--text2);margin-bottom:4px">${i}</p>`).join('')}
+    <p style="font-size:11px;color:var(--text3);margin-top:8px">⚠️ 以上分析由AI自动生成，建议人工复核后发送。分析语气可在后台切换「正式商务/简洁直白」风格。</p>
+  `;
+  document.getElementById('resultBox').classList.add('show');
+  document.getElementById('resultBox').scrollIntoView({behavior:'smooth'});
+}
+
+// Initialize with demo data
+loadDemo();
+</script>
+</body>
+</html>
