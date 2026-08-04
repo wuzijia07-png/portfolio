@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>AE工作台 · 客户账户管理 & 合同提醒</title>
+<style>
+:root{--bg:#fef8f2;--surface:#fff;--text:#1a1a1a;--text2:#7a7068;--text3:#c4bab0;
+  --red:#e04040;--red2:#ffe8e8;--orange:#e08030;--orange2:#fff0e0;
+  --green:#3d8b60;--green2:#e0f5e8;--blue:#4263eb;--blue2:#e0e8ff;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.04);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif;font-weight:300;
+  background:linear-gradient(180deg,#fef8f2,#fdf2e8);color:var(--text);
+  max-width:600px;margin:0 auto;min-height:100vh;padding:20px 16px 40px;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.header h1{font-size:22px;font-weight:200;letter-spacing:.02em}
+.header .count{font-size:12px;color:var(--text2);font-weight:300}
+.alert-banner{background:var(--red2);border:1px solid #f0c8c8;border-radius:var(--radius);
+  padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.alert-banner .icon{font-size:20px}
+.alert-banner .text{font-size:13px;font-weight:300;color:#802020}
+.alert-banner .text strong{font-weight:500}
+.alert-banner.none{background:var(--green2);border-color:#c0e0cc;color:#206040}
+
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{padding:8px 16px;border-radius:100px;font-size:12px;font-weight:400;cursor:pointer;
+  border:1px solid #e0d8cc;background:var(--surface);color:var(--text2);font-family:inherit;transition:.2s}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+.client-card{background:var(--surface);border:1px solid #f0e8de;border-radius:var(--radius);
+  padding:16px;margin-bottom:10px;position:relative;transition:.2s;box-shadow:var(--shadow)}
+.client-card:active{background:#fafaf8}
+.client-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.client-name{font-size:15px;font-weight:400;letter-spacing:.02em}
+.client-brand{font-size:12px;color:var(--text2);margin-top:2px}
+.status-badge{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:400}
+.status-active{background:var(--green2);color:var(--green)}
+.status-warning{background:var(--orange2);color:var(--orange)}
+.status-expired{background:var(--red2);color:var(--red)}
+
+.client-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.info-item{font-size:11px;color:var(--text2)}
+.info-item span{color:var(--text);font-weight:400}
+.contract-bar{height:4px;background:#f0e8de;border-radius:2px;margin-top:10px;overflow:hidden}
+.contract-fill{height:100%;border-radius:2px;transition:.3s}
+.contract-days{font-size:10px;color:var(--text3);margin-top:3px;text-align:right}
+.del-btn{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;
+  border:1px solid #e8d8d0;background:var(--surface);color:var(--text3);font-size:12px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.del-btn:hover{background:var(--red2);color:var(--red);border-color:var(--red)}
+
+.add-btn{position:fixed;bottom:24px;right:50%;transform:translateX(50%);z-index:10;
+  width:52px;height:52px;border-radius:50%;border:none;background:var(--text);color:#fff;
+  font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:.2s;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;font-weight:200}
+.add-btn:active{transform:translateX(50%) scale(.95)}
+@media(min-width:600px){.add-btn{right:calc(50% - 270px)}}
+
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.3);
+  backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.2s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-box{background:var(--surface);border-radius:var(--radius);width:90vw;max-width:440px;
+  max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.modal-hd{padding:16px 20px;border-bottom:1px solid #f0e8de;display:flex;justify-content:space-between;align-items:center}
+.modal-hd h3{font-size:16px;font-weight:400}
+.modal-hd button{width:28px;height:28px;border-radius:50%;border:1px solid #e0d8cc;background:var(--surface);cursor:pointer;font-size:14px}
+.modal-body{padding:16px 20px}
+.modal-body label{display:block;font-size:11px;font-weight:400;color:var(--text2);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+.modal-body label:first-child{margin-top:0}
+.modal-body input,.modal-body select{width:100%;padding:10px 14px;border:1px solid #e8e0d4;border-radius:8px;font-size:13px;font-family:inherit;font-weight:300;transition:.2s;background:var(--bg)}
+.modal-body input:focus,.modal-body select:focus{outline:none;border-color:var(--text)}
+.modal-ft{padding:12px 20px;border-top:1px solid #f0e8de;display:flex;gap:8px;justify-content:flex-end}
+.modal-ft button{padding:8px 20px;border-radius:100px;font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-cancel{background:var(--bg);border:1px solid #e0d8cc;color:var(--text2)}
+.btn-save{background:var(--text);color:#fff;border:none}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty .icon{font-size:40px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AE 工作台</h1>
+  <div class="count" id="clientCount">0 个客户</div>
+</div>
+
+<div class="alert-banner none" id="alertBanner">
+  <span class="icon" id="alertIcon">✅</span>
+  <span class="text" id="alertText">所有合同状态正常</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-filter="all">全部</button>
+  <button class="tab" data-filter="active">投放中</button>
+  <button class="tab" data-filter="warning">即将到期</button>
+  <button class="tab" data-filter="expired">已到期</button>
+</div>
+
+<div id="clientList"></div>
+
+<button class="add-btn" id="addBtn" title="添加客户">+</button>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="modalTitle">添加客户</h3><button onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <label>客户品牌</label><input id="fBrand" placeholder="如：SHEIN / Anker / 花西子">
+      <label>对接人</label><input id="fContact" placeholder="姓名">
+      <label>TikTok广告账户ID</label><input id="fAdId" placeholder="如：7123456789012345678">
+      <label>小店名称</label><input id="fShop" placeholder="TikTok Shop名称">
+      <label>开户状态</label><select id="fAccStatus"><option value="active">已开通</option><option value="pending">开通中</option><option value="rejected">被拒</option></select>
+      <label>合同开始日期</label><input type="date" id="fStart">
+      <label>合同到期日期</label><input type="date" id="fEnd">
+      <label>月投放预算 ($)</label><input type="number" id="fBudget" placeholder="美元金额">
+      <label>备注</label><input id="fNote" placeholder="特殊事项记录">
+    </div>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" id="saveBtn" onclick="saveClient()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const K='ae_clients';
+let clients=[],editIdx=-1,currentFilter='all';
+
+function load(){try{return JSON.parse(localStorage.getItem(K))||[]}catch(e){return[]}}
+function save(){localStorage.setItem(K,JSON.stringify(clients))}
+
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+
+function openAdd(){
+  editIdx=-1;document.getElementById('modalTitle').textContent='添加客户';
+  ['fBrand','fContact','fAdId','fShop','fNote','fBudget'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fAccStatus').value='active';
+  document.getElementById('fModal').classList.add('open');
+}
+
+function openEdit(idx){
+  editIdx=idx;const c=clients[idx];
+  document.getElementById('modalTitle').textContent='编辑客户';
+  document.getElementById('fBrand').value=c.brand;document.getElementById('fContact').value=c.contact;
+  document.getElementById('fAdId').value=c.adId;document.getElementById('fShop').value=c.shop;
+  document.getElementById('fAccStatus').value=c.accStatus;document.getElementById('fNote').value=c.note||'';
+  document.getElementById('fBudget').value=c.budget||'';
+  document.getElementById('fStart').value=c.start;document.getElementById('fEnd').value=c.end;
+  document.getElementById('modal').classList.add('open');
+}
+
+function saveClient(){
+  const c={
+    brand:document.getElementById('fBrand').value.trim(),
+    contact:document.getElementById('fContact').value.trim(),
+    adId:document.getElementById('fAdId').value.trim(),
+    shop:document.getElementById('fShop').value.trim(),
+    accStatus:document.getElementById('fAccStatus').value,
+    start:document.getElementById('fStart').value,
+    end:document.getElementById('fEnd').value,
+    budget:document.getElementById('fBudget').value,
+    note:document.getElementById('fNote').value.trim()
+  };
+  if(!c.brand){alert('请填写客户品牌');return;}
+  if(editIdx>=0){clients[editIdx]=c}else{clients.push(c)}
+  save();closeModal();render();
+}
+
+function deleteClient(idx){
+  if(!confirm('确定删除 '+clients[idx].brand+' 吗？'))return;
+  clients.splice(idx,1);save();render();
+}
+
+function getContractStatus(endDate){
+  if(!endDate)return{status:'active',days:999,label:'投放中',cls:'status-active'};
+  const today=new Date();today.setHours(0,0,0,0);
+  const end=new Date(endDate);end.setHours(0,0,0,0);
+  const days=Math.ceil((end-today)/(1000*60*60*24));
+  if(days<0)return{status:'expired',days,label:'已到期',cls:'status-expired'};
+  if(days<=30)return{status:'warning',days,label:'即将到期',cls:'status-warning'};
+  return{status:'active',days,label:'投放中',cls:'status-active'};
+}
+
+function render(filter='all'){
+  currentFilter=filter;
+  // Update tabs
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+
+  // Filter
+  let items=clients;
+  if(filter==='active')items=clients.filter(c=>getContractStatus(c.end).status==='active');
+  else if(filter==='warning')items=clients.filter(c=>getContractStatus(c.end).status==='warning');
+  else if(filter==='expired')items=clients.filter(c=>getContractStatus(c.end).status==='expired');
+
+  document.getElementById('clientCount').textContent=clients.length+' 个客户';
+
+  // Alert banner
+  const warnings=clients.filter(c=>getContractStatus(c.end).status==='warning').length;
+  const expired=clients.filter(c=>getContractStatus(c.end).status==='expired').length;
+  const banner=document.getElementById('alertBanner');
+  if(expired>0){banner.className='alert-banner';document.getElementById('alertIcon').textContent='🚨';document.getElementById('alertText').innerHTML=`<strong>${expired}</strong> 个合同已到期，需立即处理`}
+  else if(warnings>0){banner.className='alert-banner';document.getElementById('alertIcon').textContent='⚠️';document.getElementById('alertText').innerHTML=`<strong>${warnings}</strong> 个合同将在30天内到期`}
+  else{banner.className='alert-banner none';document.getElementById('alertIcon').textContent='✅';document.getElementById('alertText').textContent='所有合同状态正常'}
+
+  // Render list
+  const list=document.getElementById('clientList');
+  if(items.length===0){
+    list.innerHTML=`<div class="empty"><div class="icon">📋</div><p>暂无客户数据</p><p style="font-size:12px;color:var(--text3);margin-top:4px">点击 + 添加第一个客户</p></div>`;
+    return;
+  }
+  list.innerHTML=items.map((c,i)=>{
+    const cs=getContractStatus(c.end);
+    const totalDays=c.start&&c.end?Math.ceil((new Date(c.end)-new Date(c.start))/(1000*60*60*24)):365;
+    const elapsed=c.start?Math.ceil((new Date()-new Date(c.start))/(1000*60*60*24)):0;
+    const pct=Math.max(0,Math.min(100,Math.round(elapsed/totalDays*100)));
+    const barColor=cs.status==='expired'?'#e04040':cs.status==='warning'?'#e08030':'#3d8b60';
+    const realIdx=clients.indexOf(c);
+    return `<div class="client-card" onclick="openEdit(${realIdx})">
+      <button class="del-btn" onclick="event.stopPropagation();deleteClient(${realIdx})">✕</button>
+      <div class="client-top">
+        <div>
+          <div class="client-name">${c.brand}</div>
+          <div class="client-brand">${c.contact||'未填联系人'}${c.shop?' · '+c.shop:''}</div>
+        </div>
+        <span class="status-badge ${cs.cls}">${cs.label}</span>
+      </div>
+      <div class="client-info">
+        <div class="info-item">广告账户 <span>${c.adId||'未绑定'}</span></div>
+        <div class="info-item">开户状态 <span>${c.accStatus==='active'?'✅ 已开通':c.accStatus==='pending'?'⏳ 开通中':'❌ 被拒'}</span></div>
+        <div class="info-item">合同期限 <span>${c.start||'?'} → ${c.end||'?'}</span></div>
+        <div class="info-item">月预算 <span>${c.budget?'$'+Number(c.budget).toLocaleString():'未设定'}</span></div>
+      </div>
+      <div class="contract-bar"><div class="contract-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="contract-days">${cs.days>0?'剩余 '+cs.days+' 天':cs.days===0?'今天到期':'已过期 '+Math.abs(cs.days)+' 天'}</div>
+    </div>`;
+  }).join('');
+}
+
+// Init
+clients=load();
+render();
+
+// Events
+document.getElementById('addBtn').addEventListener('click',openAdd);
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',function(){render(this.dataset.filter)});
+});
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+</script>
+</body>
+</html>
