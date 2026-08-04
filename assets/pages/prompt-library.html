@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI提示词模板库 · 跨境电商运营</title>
+<title>AI提示词模板库 · 海外广告AE</title>
 <style>
 :root {
   --bg:#fafaf9; --surface:#fff; --border:#e8e6e1; --text:#1a1a18;
@@ -109,14 +109,15 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
 <div class="page-header">
   <div class="icon">📚</div>
   <h1>AI提示词模板库</h1>
-  <p>跨境电商运营场景 · 可复用提示词集合 · 持续沉淀迭代</p>
+  <p>海外广告AE场景 · TikTok投放 + 客户管理 · 持续沉淀迭代</p>
 </div>
 
 <div class="category-tabs" id="catTabs">
   <button class="cat-tab active" data-cat="all">全部</button>
-  <button class="cat-tab" data-cat="listing">📦 Listing文案</button>
+  <button class="cat-tab" data-cat="tiktok">🎯 TikTok广告</button>
+  <button class="cat-tab" data-cat="client">🤝 客户管理</button>
+  <button class="cat-tab" data-cat="english">📧 英文邮件</button>
   <button class="cat-tab" data-cat="data">📊 数据分析</button>
-  <button class="cat-tab" data-cat="customer">💬 客户沟通</button>
   <button class="cat-tab" data-cat="research">🔍 竞品调研</button>
   <button class="cat-tab" data-cat="process">⚙️ 流程优化</button>
 </div>
@@ -125,7 +126,7 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
 
 <div class="page-footer">
   <p>提示词模板库由 <strong>吴子嘉</strong> 整理沉淀 · AI辅助分类与优化</p>
-  <p style="margin-top:4px">模板展示的是提示词工程方法，场景为示例说明</p>
+  <p style="margin-top:4px">海外广告AE场景 · TikTok投放 + 客户管理 + 英文沟通</p>
 </div>
 </div>
 
@@ -139,9 +140,10 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
     <div class="modal-body">
       <label>所属版块</label>
       <select id="tmplCat">
-        <option value="listing">📦 Listing文案</option>
+        <option value="tiktok">🎯 TikTok广告</option>
+        <option value="client">🤝 客户管理</option>
+        <option value="english">📧 英文邮件</option>
         <option value="data">📊 数据分析</option>
-        <option value="customer">💬 客户沟通</option>
         <option value="research">🔍 竞品调研</option>
         <option value="process">⚙️ 流程优化</option>
       </select>
@@ -164,6 +166,46 @@ body.mobile-view .prompt-content{max-height:160px;font-size:12px}
 <script>
 // Default prompts
 const defaultPrompts = [
+  // ===== TikTok广告 =====
+  {cat:'tiktok',title:'TikTok广告投放策略建议',scene:'客户提案',desc:'根据客户产品和预算，生成TikTok广告投放策略方案',
+   template:'你是一位资深的TikTok广告投放专家。请根据以下客户信息，生成一份广告投放策略建议。\n\n【客户信息】\n品牌/产品：{填写}\n目标市场：{美国/东南亚/欧洲等}\n月度预算：${填写}\n产品单价：${填写}\n目标KPI：{曝光量/点击率/转化率/ROAS}\n竞品参考：{填写1-2个竞品品牌}\n\n【输出结构】\n1. 受众定向建议（兴趣标签+行为定向+人群包策略）\n2. 素材创意方向（短视频脚本结构+BGM风格+文案调性）\n3. 预算分配建议（Campaign层级+出价策略）\n4. 阶段性目标拆解（冷启动期→放量期→稳定期）\n5. 关键风险提示与避坑建议\n\n【要求】\n- 使用TikTok广告专业术语（如Spark Ads/VSA/Branded Mission等）\n- 给出可量化的预期数据区间\n- 标注每个建议的优先级（P0/P1/P2）',
+   tags:['TikTok Ads','投放策略','客户提案','P0']},
+
+  {cat:'tiktok',title:'TikTok广告素材创意Brief',scene:'日常高频',desc:'输出标准化素材Brief，对接设计师或客户确认创意方向',
+   template:'你是一位TikTok创意策略师。请根据以下信息，生成一份广告素材创意Brief。\n\n【产品信息】\n产品名称：{填写}\n核心卖点：{列出3个}\n使用场景：{描述}\n目标人群：{年龄/性别/兴趣}\n\n【Brief要求】\n1. 素材形式：{信息流视频/Spark Ads/LIVE引流/商品卡}\n2. 视频时长：{15s/30s/60s}\n3. 黄金前3秒Hook（写出3个可选的Hook文案）\n4. 产品展示方式（开箱/使用教程/对比测评/达人种草）\n5. CTA话术（写出3个可选的转化引导语）\n6. BGM推荐风格（附1-2首参考）\n\n【格式要求】\n- 每个创意点标注预期CTR提升预估\n- 提供1个故事板式的分镜脚本（5-8个镜头）\n- 标注需要注意的平台审核红线',
+   tags:['TikTok','素材Brief','创意策略','日常高频']},
+
+  {cat:'tiktok',title:'TikTok小店商品文案优化',scene:'运营优化',desc:'针对TikTok Shop商品卡片和直播话术进行AI优化',
+   template:'你是一位TikTok Shop运营专家。请根据以下商品信息，优化小店商品展示和直播话术。\n\n【商品信息】\n品名：{填写}\n售价：${填写}\n类目：{填写}\n当前转化率：{填写}\n\n【优化输出】\n1. 商品标题优化（25-50字符，含高搜关键词）\n2. 商品主图优化建议（构图/色调/文字叠加）\n3. 商品详情页文案框架（3段式：痛点→解决方案→信任背书）\n4. 直播带货话术（开场留人+产品介绍+逼单话术+转粉话术）\n5. 评论区运营话术（5条引导好评+2条差评回复模板）\n\n【数据要求】\n- 标题优化后预期搜索曝光提升%\n- 标注每个话术适用的直播间阶段（起号/平稳/大促）',
+   tags:['TikTok Shop','商品优化','直播话术','运营']},
+
+  // ===== 客户管理 =====
+  {cat:'client',title:'客户需求对接纪要模板',scene:'日常高频',desc:'将客户电话/会议中的碎片需求，梳理为标准化对接纪要',
+   template:'你是一位专业AE。请将以下客户沟通内容，整理为标准化对接纪要。\n\n【沟通内容】\n{粘贴会议记录/聊天记录/语音转文字内容}\n\n【纪要结构】\n1. 客户基本信息（品牌/对接人/沟通日期）\n2. 核心需求摘要（1-2句话概括）\n3. 需求拆解清单（每条需求包含：描述→优先级→责任人→预计完成时间）\n4. 我方待办事项（Action Items）\n5. 需客户配合事项\n6. 下次沟通计划（时间+议题）\n\n【格式要求】\n- 每条Action Item标注紧急度（紧急/本周/本月）\n- 涉及合同/金额的标注「需法务/财务确认」\n- 客户情绪/态度备注（积极/中立/不满→需重点关注）',
+   tags:['客户管理','需求对接','纪要模板','日常高频']},
+
+  {cat:'client',title:'客户广告账户诊断报告',scene:'客户汇报',desc:'根据客户广告数据，生成专业诊断报告和建议',
+   template:'你是一位TikTok广告优化师。请根据以下数据，生成客户广告账户诊断报告。\n\n【账户数据】\n消耗：${填写}\n展示量：{填写}\n点击率(CTR)：{填写}%\n转化率(CVR)：{填写}%\n单次转化成本(CPA)：${填写}\nROAS：{填写}\n主要投放国家：{填写}\n\n【报告结构】\n1. 核心指标概览（vs 行业benchmark对比）\n2. 亮点分析（什么做得好，为什么）\n3. 问题诊断（指出3个最关键问题）\n4. 优化建议（每个建议包含：操作→预期效果→执行难度）\n5. 下阶段投放策略建议\n\n【表达要求】\n- 用数据说话，避免主观判断\n- 负面信息用「优化空间」替代「问题」\n- 每个结论都有数据支撑',
+   tags:['客户管理','诊断报告','数据汇报','客户维护']},
+
+  {cat:'client',title:'客户续约/升级沟通策略',scene:'商务谈判',desc:'根据客户历史合作情况，制定续约或服务升级沟通方案',
+   template:'你是一位资深客户成功经理。请根据以下信息，制定客户续约沟通策略。\n\n【客户信息】\n合作时长：{填写}\n历史投放总额：${填写}\n近期ROAS表现：{填写}\n客户满意度：{高/中/低}\n合同到期日：{填写}\n\n【策略输出】\n1. 客户价值评估（基于ROI和长期潜力）\n2. 续约沟通节奏（提前多久、几次沟通、谁参与）\n3. 增值服务亮点包装（将我们的价值可视化）\n4. 价格谈判话术（3种场景：涨价沟通/持平沟通/优惠沟通）\n5. 客户可能提出的异议及应对话术（至少3个Q&A）\n6. 升级销售机会点（可推荐的附加服务）\n\n【沟通原则】\n- 先回顾成果，再谈续约\n- 用数据证明ROI，不要空谈\n- 准备1个「惊喜」增值福利',
+   tags:['客户管理','续约沟通','商务策略','客户维护']},
+
+  // ===== 英文邮件 =====
+  {cat:'english',title:'海外客户专业英文邮件',scene:'日常高频',desc:'一键生成标准商务英文邮件，覆盖开户/汇报/问题处理等场景',
+   template:'You are a professional Account Executive for TikTok advertising. Write a professional email in English based on the following context.\n\n【Email Context】\nPurpose: {account setup / performance report / issue follow-up / meeting follow-up / contract}\nRecipient: {client name and title}\nKey points to communicate: {list 3-5 key points}\nTone: {formal / friendly / urgent}\n\n【Email Structure】\nSubject Line: {catchy but professional}\nOpening: Friendly greeting + context reminder\nBody: 3-5 bullet points covering key information\nNext Steps: Clear action items with timeline\nClosing: Professional sign-off with contact info\n\n【Requirements】\n- Keep it concise (under 150 words)\n- Use TikTok advertising terminology correctly\n- Include placeholders for [Name] [Date] [Amount]\n- Add CC/BCC suggestion if needed',
+   tags:['英文邮件','客户沟通','日常高频','海外']},
+
+  {cat:'english',title:'TikTok广告效果英文周报',scene:'周报汇报',desc:'生成标准格式的英文广告效果周报，发送给海外客户',
+   template:'You are a TikTok Ads performance analyst. Generate a weekly performance report email in English.\n\n【Data Input】\nCampaign Period: {start date} - {end date}\nTotal Spend: ${amount}\nImpressions: {number}\nClicks: {number}\nCTR: {percentage}%\nConversions: {number}\nCPA: ${amount}\nROAS: {number}x\nTop Performing Creative: {creative name}\n\n【Report Structure】\nSubject: Weekly Performance Report | {Brand} TikTok Ads | {Date Range}\n\n1. Executive Summary (2-3 sentences)\n2. Key Metrics Table (formatted)\n3. Performance Highlight - What worked & why\n4. Areas for Optimization - What to improve\n5. Next Week Action Plan\n6. Questions for Client Feedback\n\n【Tone Requirements】\n- Professional but approachable\n- Data-driven, avoid vague statements\n- End with a clear question to encourage client engagement',
+   tags:['英文邮件','周报','数据汇报','海外客户']},
+
+  {cat:'english',title:'客户投诉/问题英文回复',scene:'危机处理',desc:'针对客户不满或问题，生成得体专业的英文回复邮件',
+   template:'You are a senior AE handling a client concern about TikTok advertising. Write a professional response email.\n\n【Issue Details】\nClient Concern: {describe the complaint or issue}\nRoot Cause: {explain what happened}\nResolution Status: {resolved / in progress / investigating}\nTimeline for Fix: {when}\nCompensation (if any): {what we offer}\n\n【Email Structure】\n1. Acknowledge the issue (Show empathy, I understand...)\n2. Explain what happened (Be honest but professional)\n3. What we are doing to fix it (Specific actions)\n4. Timeline for resolution\n5. How we will prevent this in the future\n6. Offer compensation or extra support if appropriate\n\n【Tone Guidelines】\n- NEVER defensive or dismissive\n- Use I understand / I appreciate / Thank you for patience\n- Focus on solution, not blame\n- Offer a follow-up call if issue is serious',
+   tags:['英文邮件','投诉处理','客户维护','危机']},
+
+  // ===== 原有模板（跨境电商场景）=====
   {cat:'listing',title:'跨境商品Listing生成（多平台）',scene:'日常高频',desc:'输入产品基础信息，一键生成适配Amazon/Shopee/Lazada的Listing文案',
    template:'你是一名资深的跨境电商运营专家，擅长撰写高转化率的商品Listing文案。\n\n【产品信息】\n产品名称：{填写产品名称}\n核心卖点：{列出3-5个卖点，每条一行}\n目标客群：{描述目标用户画像}\n价格区间：{填写价格范围}\n竞品链接：{可选，填写竞品ASIN或URL}\n\n【生成要求】\n1. 标题：符合{平台名称}规范，包含核心关键词，突出差异化卖点，字符数控制在{平台字符限制}以内\n2. 五点描述：每点聚焦一个卖点，使用场景化语言，让用户能想象使用效果\n3. 搜索关键词：列出15-20个相关搜索词，按相关性排序\n4. A+页面文案：提供模块化文案框架\n\n【格式要求】\n- 输出时标注每个模块的字符数\n- 如有字数超出平台限制，给出删减建议\n- 最后附上该Listing的差异化竞争优势总结',
    tags:['Listing','多平台','日常高频','P0']},
@@ -328,7 +370,7 @@ const addModal=document.getElementById('addModal');
 
 function openAddModal(){
   editingIndex=null;
-  document.getElementById('tmplCat').value='listing';
+  document.getElementById('tmplCat').value='tiktok';
   document.getElementById('tmplTitle').value='';
   document.getElementById('tmplScene').value='';
   document.getElementById('tmplDesc').value='';
